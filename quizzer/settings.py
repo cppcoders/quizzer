@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'django_cleanup',
     'users.apps.UsersConfig',
+    'quiz.apps.QuizConfig',
     "crispy_forms",
     "crispy_bootstrap5",
     'django.contrib.admin',
@@ -128,5 +129,7 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 AUTH_USER_MODEL = 'users.User'
+
+LOGIN_REDIRECT_URL = 'quiz-home'
 
 LOGIN_URL = 'login'
