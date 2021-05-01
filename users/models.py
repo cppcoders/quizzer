@@ -29,7 +29,7 @@ class Group(models.Model):
     name = models.CharField(max_length=255)
 
     owner = models.ForeignKey(
-        Teacher, on_delete=models.CASCADE, related_name='teachers')
+        Teacher, on_delete=models.CASCADE, related_name='owned_groups')
 
     def __str__(self):
         return self.name
