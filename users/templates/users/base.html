@@ -14,8 +14,130 @@
     />
 
     <title>{{ title }}</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+      integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p"
+      crossorigin="anonymous"
+    />
+    <style>
+      nav div a:hover {
+        text-decoration: none;
+        color: #f7d372;
+      }
+
+      nav {
+        background-color: #283071;
+        color: #fff;
+        font-weight: 600;
+      }
+
+      nav div a span {
+        font-size: x-large;
+      }
+
+      .selected {
+        font-weight: 800;
+        color: #f7d372;
+      }
+
+      .avatar {
+        vertical-align: middle;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+      }
+
+      .fa-bars {
+        color: #fff;
+        cursor: pointer;
+      }
+
+      h1 {
+        font-size: 40px;
+        display: block;
+      }
+
+      h2 {
+        font-size: 32px;
+      }
+
+      h3 {
+        font-size: 22px;
+      }
+
+      .btn-yellow {
+        background-color: #f7d372;
+        color: #283071;
+        font-weight: bold;
+      }
+
+      .btn-yellow:hover {
+        background-color: orange;
+      }
+
+      footer {
+        background-color: #283071;
+        color: white;
+        text-align: center;
+        padding: 10%;
+      }
+
+      .left {
+        width: 50%;
+      }
+
+      .right {
+        width: 50%;
+      }
+
+      #group_not_found {
+        display: none;
+      }
+
+      @media (max-width: 575px) {
+        #join_group_section_image {
+          display: none;
+        }
+      }
+    </style>
   </head>
   <body>
+    <nav class="navbar navbar-dark flex justify-between">
+      <div>
+        <a href="{% url 'quiz-home' %}"><span style="font-weight: bold; font-size: 10mm">Quizzer</span></a>
+      </div>
+      {%if user.is_authenticated%}
+      <div>
+        <a href="{% url 'quiz-home' %}" class="mx-3"><span class="selected">Home</span></a>
+        <a href="{% url 'quiz-groups' %}" class="mx-3"><span>Groups</span></a>
+        <a href="{% url 'quiz-quizzes' %}" class="mx-3"><span>Quizzes</span></a>
+        <a href="{% url 'quiz-about_us' %}" class="mx-3"><span>About us</span></a>
+      </div>
+
+      <div class="flex justify-end" style="padding: 10px">
+        <i class="fas fa-bars fa-2x mt-2 mr-3"></i>
+        <a href="{% url 'quiz-profile' %}"><img class="avatar" src="media/avatar2.jpg" /></a>
+      </div>
+      {%else%}
+      <a class="nav-item nav-link" href="{%url 'login'%}">Login</a>
+      <a class="nav-item nav-link" href="{%url 'register'%}">Register</a>
+      {%endif%}
+    </nav>
     <div class="container">
       <div class="row">
         <div class="col-md-8">

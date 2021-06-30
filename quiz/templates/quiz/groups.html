@@ -1,0 +1,156 @@
+{% extends "quiz/base.html" %} {% block bd %} onload="fetch_groups() {% endblock bd %} {% block content %}
+
+<!--******************************************** Group Options ********************************************-->
+<!---------------------------------------------------------------------------------------------------------->
+<div class="container">
+  <div class="group row justify-center" style="padding: 200px 50px 50px 50px">
+    <div class="create_group col-12 col-md-6" id="create_group">
+      <div class="mx-auto mb-12">
+        <h1 class="mb-3">Create Group</h1>
+        <h3 style="color: #5a5a5a">
+          A Group ID will be created for you, you can send it
+          <br />
+          to people you want to join the group
+        </h3>
+        <div class="mt-5">
+          <form class="row">
+            <div class="form-group col-8">
+              <input
+                type="text"
+                name="group_name"
+                class="form-control"
+                placeholder="Group Name"
+                value=""
+              />
+            </div>
+            <div class="form-group">
+              <button
+                type="button"
+                onclick="create_group()"
+                class="btn btn-yellow"
+              >
+                Create
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="Join group col-12 col-md-6">
+      <div class="mx-auto">
+        <h1 class="mb-3">Join Group</h1>
+        <h3 style="color: #5a5a5a">
+          If you don't have the group id please ask your instructor<br />
+          to give it to you
+        </h3>
+        <div class="mt-5">
+          <form class="row">
+            <div class="form-group col-8">
+              <input
+                type="text"
+                name="group_id"
+                class="form-control"
+                placeholder="Group ID"
+                value=""
+              />
+            </div>
+            <div class="form-group">
+              <button
+                type="button"
+                onclick="join_group()"
+                class="btn btn-yellow"
+              >
+                Join
+              </button>
+            </div>
+          </form>
+        </div>
+        <p id="group_not_found">Group not found</p>
+      </div>
+    </div>
+  </div>
+</div>
+<!--******************************************** Group Options ********************************************-->
+<!---------------------------------------------------------------------------------------------------------->
+
+<!--*********************************************** Groups ***********************************************-->
+<!---------------------------------------------------------------------------------------------------------->
+<div class="mt-14">
+  <h1 style="text-align: center">Your Groups</h1>
+
+  <div
+    class="row mt-5 justify-center"
+    id="groups_container"
+    style="margin: 50px 0px 0px 0px"
+  ></div>
+</div>
+
+<!--*********************************************** Groups ***********************************************-->
+<!---------------------------------------------------------------------------------------------------------->
+
+<footer class="mt-5">
+  <p style="font-size: 10mm; font-weight: bold">
+    Copyrights @ 2021 AAST graduation team
+  </p>
+</footer>
+
+<script>
+  account_Type = "Instructor";
+  if (account_Type !== "Instructor") {
+    var e = document.getElementById("create_group");
+    e.style.display = "none";
+  }
+  function fetch_groups() {
+    var cont = document.getElementById("groups_container");
+    var groups_dict = [
+      {
+        title: "Algorithms",
+        link: "#",
+        img_src: "media/avatar.jpg",
+      },
+      {
+        title: "Big Data",
+        link: "#",
+        img_src: "media/avatar.jpg",
+      },
+      {
+        title: "Digital Image proccessing",
+        link: "#",
+        img_src: "media/avatar.jpg",
+      },
+    ];
+    for (g of groups_dict) {
+      var c = document.createElement("div");
+      c.classList.add("card", "col-lg-3", "col-md-3", "col-sm-5", "m-4");
+      c.style.padding = "0px";
+      c.style.textAlign = "center";
+      c.innerHTML =
+        '<img class="card-img-top" src="media/avatar.jpg" alt="Card image cap"> ' +
+        '<div class="card-body">' +
+        '<h3 class="card-title">' +
+        g.title +
+        '</h3><a href="' +
+        g.link +
+        '" class="btn btn-yellow">View Group</a></div>';
+      cont.appendChild(c);
+    }
+  }
+</script>
+<script
+  src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+  integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+  crossorigin="anonymous"
+></script>
+<script
+  src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+  integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+  crossorigin="anonymous"
+></script>
+<script
+  src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+  integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+  crossorigin="anonymous"
+></script>
+
+{% endblock content %}

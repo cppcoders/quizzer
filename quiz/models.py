@@ -18,7 +18,7 @@ class Question(models.Model):
     exam = models.ForeignKey(
         Exam, on_delete=models.CASCADE, related_name='questions')
     text = models.CharField('Question', max_length=255)
-
+    
     def __str__(self):
         return self.text
 

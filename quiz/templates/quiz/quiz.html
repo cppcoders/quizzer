@@ -1,0 +1,108 @@
+{% extends "quiz/base.html" %} {% block bd %} onload="fill_data() {% endblock bd%} {% block content %}
+
+<!--********************************************  Quiz info **********************************************-->
+<!---------------------------------------------------------------------------------------------------------->
+
+<div class="container">
+  <div
+    class="grid grid-cols-12 grid-rows-6 p-50 gap-12"
+    style="font-size: 32px; text-align: center; padding: 50px"
+  >
+    <p class="col-span-12 row-span-1">
+      <b>Group:</b> <span id="group">Algorithms</span>
+    </p>
+    <p class="col-span-12 row-span-1">
+      <b>Date:</b> <span id="date">23/3/2021</span>
+    </p>
+    <p class="col-span-12 row-span-1">
+      <b>Time:</b> <span id="time">20:30</span>
+    </p>
+    <p class="col-span-12 row-span-1">
+      <b>Duration:</b> <span id="duration">1:30</span>
+    </p>
+    <p
+      class="col-span-12 row-span-1"
+      style="color: red; display: none"
+      id="not_yet"
+    >
+      Not Yet
+    </p>
+    <button class="btn btn-yellow col-span-12" onclick="attemp()">
+      Attemp now
+    </button>
+  </div>
+</div>
+
+<!--********************************************  Quiz info **********************************************-->
+<!---------------------------------------------------------------------------------------------------------->
+
+<footer class="mt-5">
+  <p style="font-size: 10mm; font-weight: bold">
+    Copyrights @ 2021 AAST graduation team
+  </p>
+</footer>
+
+<script>
+  var quiz_data = {
+    groupd: "Algorithms",
+    date: "25/4/2021",
+    time: {
+      hours: "5",
+      minutes: "15",
+    },
+    duration: {
+      hours: "2",
+      minutes: "00",
+    },
+  };
+
+  function fill_data() {
+    var e = document.getElementById("group");
+    e.innerText = quiz_data["groupd"];
+
+    e = document.getElementById("date");
+    e.innerText = quiz_data["date"];
+
+    e = document.getElementById("time");
+    e.innerText =
+      quiz_data["time"]["hours"] + ":" + quiz_data["time"]["minutes"];
+
+    e = document.getElementById("duration");
+    e.innerText =
+      quiz_data["duration"]["hours"] + ":" + quiz_data["duration"]["minutes"];
+  }
+
+  function attemp() {
+    /*var date = document.getElementById('date') ;
+                        var today = new Date() ;
+                        var today_date = today.getDate() + '/' + (today.getMonth()+1)  +'/' + today.getFullYear() ;
+                        var today_time = today.getHours() + ':' + today.getMinutes();
+                        if(today_date == quiz_data["date"] && today.getHours() == quiz_data["time"]["hours"] &&  parseInt(today.getMinutes()) == parseInt(quiz_data["time"]["minutes"] ) )
+                        {
+                                window.location.href = "/attemp";
+                        }
+                        else
+                        {
+                                var not_yet = document.getElementById('not_yet')  ;
+                                not_yet.style.display = 'block'
+                        }*/
+
+    window.location.href = "/attemp";
+  }
+</script>
+<script
+  src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+  integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+  crossorigin="anonymous"
+></script>
+<script
+  src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+  integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+  crossorigin="anonymous"
+></script>
+<script
+  src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+  integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+  crossorigin="anonymous"
+></script>
+{% endblock content %}

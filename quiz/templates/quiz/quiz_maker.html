@@ -1,0 +1,337 @@
+{% extends "quiz/base.html" %} {% block bd %} onload="fill_data(){% endblock bd%} {% block content %}
+
+<!--********************************************  Create quiz **********************************************-->
+<!---------------------------------------------------------------------------------------------------------->
+<div class="container" id="container">
+  <!----------------------------------------Quiz title and description --------------------------------->
+  <div class="quiz-discription shadow p-5 mt-5 grid grid-rows-2">
+    <div style="font-size: 32px" class="row-span-1 grid grid-cols-3">
+      <input placeholder="Quiz title here" class="col-span-2" />
+    </div>
+
+    <div style="font-size: 22px" class="row-span-1 grid grid-cols-1">
+      <textarea
+        placeholder="Quiz description here"
+        style="padding: 20px 0px 0px 0px; max-height: 66px"
+      ></textarea>
+    </div>
+  </div>
+  <!----------------------------------------Quiz title and description --------------------------------->
+
+  <!--------------------------------------Quiz date, time  and duration -------------------------------->
+  <div
+    class="quiz_time grid grid-rows-1 grid-cols-3 gap-24"
+    style="padding: 100px 50px"
+  >
+    <div class="col-span-3 lg:col-span-1 grid grid-rows-2 gap-2">
+      <label class="row-span-1"> Date </label>
+      <input
+        class="date row-span-1"
+        id="quiz_date"
+        name="quizDate"
+        data-date-format="dd-mm-yyyy"
+        placeholder="dd-mm-yyyy"
+      />
+    </div>
+
+    <div class="col-span-3 lg:col-span-1 grid grid-rows-2 grid-cols-2">
+      <label class="row-span-1"> Time </label>
+      <div class="row-span-1 col-span-2 grid grid-rows-1 grid-cols-2 gap-2">
+        <select class="form-control col-span-1" id="time_hours">
+          <option selected>hour</option>
+        </select>
+
+        <select class="form-control col-span-1" id="time_minutes">
+          <option selected>minute</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="col-span-3 lg:col-span-1 grid grid-rows-2 grid-cols-2">
+      <label class="row-span-1">Duration</label>
+      <div class="row-span-1 col-span-2 grid grid-rows-1 grid-cols-2 gap-2">
+        <select class="form-control col-span-1" id="duration_hours">
+          <option selected>hours</option>
+        </select>
+
+        <select class="form-control col-span-1" id="duration_minutes">
+          <option selected>minutes</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <!--------------------------------------Quiz date, time  and duration -------------------------------->
+
+  <!-----------------------------------------------------delete or new question ------------------------------------------>
+  <div class="grid grid-rows-1 grid-cols-10 mt-3 gap-6">
+    <div class="row-span-1 col-span-3"></div>
+    <select class="row-span-1 col-span-2 form-control" id="types">
+      <option>MCQ</option>
+      <option>Matching</option>
+      <option>True or False</option>
+      <option>Essay</option>
+    </select>
+    <button class="btn btn-success" onclick="add_question()">
+      <i class="fas fa-plus"></i>
+    </button>
+  </div>
+  <!-----------------------------------------------------delete or new question ------------------------------------------>
+
+  <div class="grid grid-cols-10 mt-5">
+    <button class="btn btn-yellow col-span-10" onclick="create_quiz()">
+      Create Quiz
+    </button>
+  </div>
+</div>
+
+<!--********************************************  Create quiz **********************************************-->
+<!---------------------------------------------------------------------------------------------------------->
+
+<footer class="mt-5">
+  <p style="font-size: 10mm; font-weight: bold">
+    Copyrights @ 2021 AAST graduation team
+  </p>
+</footer>
+
+<script>
+  options_cnt = 2;
+  $(".date").datepicker({
+    format: "dd-mm-yyyy",
+  });
+
+  function fill_data() {
+    var dh = document.getElementById("duration_hours");
+    var dm = document.getElementById("duration_minutes");
+    var th = document.getElementById("time_hours");
+    var tm = document.getElementById("time_minutes");
+
+    for (i = 0; i <= 23; i++) {
+      var e = document.createElement("option");
+      var x = document.createElement("option");
+      e.innerText = i;
+      x.innerText = i;
+      dh.appendChild(e);
+      th.appendChild(x);
+    }
+
+    for (i = 0; i <= 59; i++) {
+      var e = document.createElement("option");
+      var x = document.createElement("option");
+      e.innerText = i;
+      x.innerText = i;
+      dm.appendChild(e);
+      tm.appendChild(x);
+    }
+  }
+
+  function add_question() {
+    var container = document.getElementById("container");
+    var select = document.getElementById("types");
+    var p = document.createElement("div");
+    p.classList.add("mt-5");
+    if (select.value == "MCQ") {
+      p.innerHTML =
+        "<!--------------------------------------Questions conrainer  -------------------------------->" +
+        '<div class="question shadow  justify-center ">' +
+        "<!------------------------------ Question head -------------------------------------->" +
+        '<div class="grid grid-cols-10 gap-6 " style="padding: 50px;">' +
+        '<div class="col-start-1"></div>' +
+        '<textarea name="question_head" class="question_head col-span-8" placeholder="Question"' +
+        'style="padding: 15px 0px 0px 10px ; background-color: #f8f9fa; max-height: 60px;"></textarea></div>' +
+        "<!------------------------------ Question head -------------------------------------->" +
+        "<!------------------------------ Question body -------------------------------------->" +
+        '<div class="grid grid-cols-10 gap-6" style="padding: 10px 0px 50px 0px;" id="q1">' +
+        '<div class="col-span-10 grid grid-cols-10 gap-6" id="option_1">' +
+        '<div class="col-start-1"></div>' +
+        '<input type="radio" style="min-height: 65px; ">' +
+        '<textarea class="col-span-6" placeholder="Option"' +
+        'style="padding: 20px 0px 0px 10px ; max-height: 55px;"></textarea>' +
+        '<div class="col-span-1 flex flex-col justify-center">' +
+        '<i class="fas fa-times fa-2x delete_icon"' +
+        'onclick="delete_option(this)"></i>' +
+        "</div></div>" +
+        '<div class="col-span-10 grid grid-cols-10">' +
+        '<div class="col-start-2"></div>' +
+        '<button class="col-span-1 btn btn-primary" onclick="add_option(this)">Add option</button></div></div></div>' +
+        "<!------------------------------ Question body -------------------------------------->" +
+        '<div class="grid grid-cols-10 mt-3">' +
+        '<button class="btn btn-danger col-span-10" onclick="delete_question(this)">' +
+        '<i class="fas fa-trash-alt" style="color: #fff;"></i> Delete</button></div>' +
+        "<!--------------------------------------Questions conrainer  -------------------------------->";
+    } else if (select.value == "Matching") {
+      console.log(1);
+      p.innerHTML =
+        "<!--------------------------------------Question conrainer  -------------------------------->" +
+        '<div class="question shadow  justify-center ">' +
+        "<!------------------------------ Question head -------------------------------------->" +
+        '<div class="grid grid-cols-10 gap-6 " style="padding: 50px;">' +
+        '<div class="col-start-1"></div>' +
+        '<textarea name="question_head" class="question_head col-span-8"placeholder="Question"' +
+        'style="padding: 15px 0px 0px 10px ; background-color: #f8f9fa; max-height: 60px;"></textarea></div>' +
+        "<!------------------------------ Question head -------------------------------------->" +
+        "<!------------------------------ Question body -------------------------------------->" +
+        '<div class="grid grid-cols-12" style="padding-bottom: 50px;">' +
+        '<div class="col-start-1"></div>' +
+        '<div class="col-span-5 grid grid-cols-5" id="rows">' +
+        '<div class="col-span-5 grid grid-cols-5 gap-6">' +
+        '<textarea class="col-span-4" placeholder="Row"' +
+        'style="padding: 20px 0px 0px 10px ; max-height: 55px;"></textarea>' +
+        '<div class="col-span-1 flex flex-col justify-center">' +
+        '<i class="fas fa-times fa-2x delete_icon"' +
+        'onclick="delete_option(this)"></i>' +
+        "</div>" +
+        "</div>" +
+        '<div class="col-span-5 grid grid-cols-5 mt-5">' +
+        '<div class="col-start-1"></div>' +
+        '<button class="col-span-1 btn btn-primary" style="max-height: 38px;"' +
+        'onclick="add_row(this)">Add Row</button>' +
+        "</div>" +
+        "</div>" +
+        '<div class="col-span-5 grid grid-cols-5" id="columns">' +
+        '<div class="col-span-5 grid grid-cols-5 gap-6">' +
+        '<textarea class="col-span-4" placeholder="Column"' +
+        'style="padding: 20px 0px 0px 10px ; max-height: 55px;"></textarea>' +
+        '<div class="col-span-1 flex flex-col justify-center">' +
+        '<i class="fas fa-times fa-2x delete_icon"' +
+        'onclick="delete_option(this)"></i>' +
+        "</div>" +
+        "</div>" +
+        '<div class="col-span-5 grid grid-cols-5 mt-5">' +
+        '<div class="col-start-1"></div>' +
+        '<button class="col-span-1 btn btn-primary" style="max-height: 38px;"' +
+        'onclick="add_column(this)">Add' +
+        "Column</button>" +
+        "</div>" +
+        "</div>" +
+        '<div class="col-end-1"></div>' +
+        "</div>" +
+        "<!------------------------------ Question body -------------------------------------->" +
+        "<div>" +
+        "</div>" +
+        '<div class="grid grid-cols-10 mt-3">' +
+        '<button class="btn btn-danger col-span-10" onclick="delete_question(this)">' +
+        '<i class="fas fa-trash-alt" style="color: #fff;"></i> Delete' +
+        "</button>" +
+        "</div>" +
+        "</div>";
+    } else if (select.value == "True or False") {
+      p.innerHTML =
+        '<div class="question shadow  justify-center ">' +
+        "<!---------------------------Quiz head-------------------------------------->" +
+        '<div class="grid grid-cols-10 gap-6 " style="padding: 50px;">' +
+        '<div class="col-start-1"></div>' +
+        '<textarea name="question_head" class="question_head col-span-8"' +
+        '       placeholder="Question"' +
+        '        style="padding: 15px 0px 0px 10px ; background-color: #f8f9fa; max-height: 60px;"></textarea>' +
+        "</div>" +
+        "<!---------------------------Quiz head-------------------------------------->" +
+        "<!---------------------------Quiz body-------------------------------------->" +
+        '<div class="grid grid-cols-10 gap-6">' +
+        '        <div class="col-start-1"></div>' +
+        '        <div class="col-span-9 ">' +
+        '                <formc class="form-group grid grid-cols-7" style="font-size: 22px;">' +
+        '                <div class="col-start-1"></div>' +
+        '        <div class="col-span-3">' +
+        '                <input type="radio" name="TorF">' +
+        "        <label>True</label>" +
+        "</div>" +
+        '<div class="col-span-3">' +
+        '        <input type="radio" name="TorF">' +
+        "<label>False</label>" +
+        "</div>" +
+        "</form>" +
+        "</div>" +
+        "</div>" +
+        "<!---------------------------Quiz body-------------------------------------->" +
+        "</div>" +
+        '<div class="grid grid-cols-10 mt-3">' +
+        '        <button class="btn btn-danger col-span-10" onclick="delete_question(this)">' +
+        '        <i class="fas fa-trash-alt" style="color: #fff;"></i> Delete' +
+        "</button>" +
+        "</div>" +
+        "</div>";
+    } else if (select.value == "Essay") {
+      p.innerHTML =
+        '<div class="question shadow  justify-center" >' +
+        "<!---------------------------Quiz head-------------------------------------->" +
+        '<div class="grid grid-cols-10 gap-6 " style="padding: 50px;">' +
+        '        <div class="col-start-1"></div>' +
+        '<textarea name="question_head" class="question_head col-span-8"' +
+        '        placeholder="Question"' +
+        '        style="padding: 15px 0px 0px 10px ; background-color: #f8f9fa; max-height: 60px;"></textarea>' +
+        "</div>" +
+        "<!---------------------------Quiz head-------------------------------------->" +
+        "<!---------------------------Quiz body-------------------------------------->" +
+        '<div class="grid grid-cols-10 gap-6"style="padding: 50px;">' +
+        '<div class="col-start-1"></div>' +
+        '<textarea class="col-span-8" placeholder="Answer" style="padding: 15px 0px 0px 10px ;' +
+        'background-color: #f8f9fa;min-height: 150px;"></textarea>' +
+        "</div>" +
+        "<!---------------------------Quiz body-------------------------------------->" +
+        "</div>" +
+        '<div class="grid grid-cols-10 mt-3">' +
+        '<button class="btn btn-danger col-span-10" onclick="delete_question(this)">' +
+        '<i class="fas fa-trash-alt" style="color: #fff;"></i> Delete' +
+        "</button>" +
+        "</div>" +
+        "</div>";
+    }
+
+    container.insertBefore(p, container.lastElementChild);
+  }
+
+  function delete_question(event) {
+    var p = event.parentNode.parentNode;
+    p.parentNode.removeChild(p);
+  }
+
+  function add_option(add) {
+    var q = add.parentNode.parentNode;
+    var new_option = document.createElement("div");
+    new_option.classList.add("col-span-10", "grid", "grid-cols-10", "gap-6");
+    new_option.innerHTML =
+      '<div class="col-start-1"></div> ' +
+      '<input type="radio" style="min-height: 65px; "> ' +
+      '<textarea class="col-span-6" placeholder="Option" ' +
+      '        style="padding: 20px 0px 0px 10px ; max-height: 55px;"></textarea> ' +
+      '<div class="col-span-1 flex flex-col justify-center"> ' +
+      '        <i class="fas fa-times fa-2x delete_icon" id="option_1" onclick="delete_option(this)"></i> ' +
+      "</div>" +
+      "</div>";
+    q.insertBefore(new_option, q.lastElementChild);
+    options_cnt++;
+  }
+
+  function delete_option(op) {
+    var p = op.parentNode.parentNode;
+    p.parentNode.removeChild(p);
+  }
+
+  function add_row(event) {
+    var q = event.parentNode.parentNode;
+    var new_row = document.createElement("div");
+    new_row.classList.add("col-span-5", "grid", "grid-cols-5", "gap-6");
+    new_row.innerHTML =
+      '<textarea class="col-span-4" placeholder="Row"' +
+      'style = "padding: 20px 0px 0px 10px ; max-height: 55px;" ></textarea >' +
+      '<div class="col-span-1 flex flex-col justify-center">' +
+      '<i class="fas fa-times fa-2x delete_icon"' +
+      'onclick="delete_option(this)"></i></div>';
+    q.insertBefore(new_row, q.lastElementChild);
+  }
+
+  function add_column(event) {
+    var q = event.parentNode.parentNode;
+    var new_row = document.createElement("div");
+    new_row.classList.add("col-span-5", "grid", "grid-cols-5", "gap-6");
+    new_row.innerHTML =
+      '<textarea class="col-span-4" placeholder="Column"' +
+      'style = "padding: 20px 0px 0px 10px ; max-height: 55px;" ></textarea >' +
+      '<div class="col-span-1 flex flex-col justify-center">' +
+      '<i class="fas fa-times fa-2x delete_icon"' +
+      'onclick="delete_option(this)"></i></div>';
+    q.insertBefore(new_row, q.lastElementChild);
+  }
+</script>
+
+{% endblock content %}

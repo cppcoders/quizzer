@@ -1,0 +1,250 @@
+{% extends "quiz/base.html" %} {% block bd %} onload="fill_data() {% endblock bd%} {% block content %}
+<!--********************************************  Quiz info **********************************************-->
+<!---------------------------------------------------------------------------------------------------------->
+<div
+  class="grid grid-cols-3 grid-rows-2 gap-6 shadow"
+  style="padding: 50px; font-size: 22px; font-weight: 600"
+>
+  <div class="col-start-1"></div>
+  <p class="col-span-1 row-span-1">Group: <span>Algorithms</span></p>
+  <p class="col-span-1 row-span-1">Date: <span>25/4/2021</span></p>
+  <div class="col-start-1"></div>
+  <p class="col-span-1 row-span-1">Time: <span>5:00</span></p>
+  <p class="col-span-1 row-span-1">Duration: <span>2:00</span></p>
+
+  <div class="col-start-1"></div>
+  <p class="col-span-1" style="text-align: center">
+    Timer: <span id="counter">00:59</span>
+  </p>
+</div>
+
+<!--********************************************  Quiz info **********************************************-->
+<!---------------------------------------------------------------------------------------------------------->
+
+<!--********************************************  Quiz Container *****************************************-->
+<!---------------------------------------------------------------------------------------------------------->
+<div class="container mt-24" id="container">
+  <div class="grid grid-cols-10 mt-40">
+    <button class="btn btn-yellow col-span-10">Submit</button>
+  </div>
+</div>
+<!--********************************************  Quiz Container *****************************************-->
+<!---------------------------------------------------------------------------------------------------------->
+
+<footer class="mt-5">
+  <p style="font-size: 10mm; font-weight: bold">
+    Copyrights @ 2021 AAST graduation team
+  </p>
+</footer>
+
+<script>
+  var countDownDate = new Date("Oct 23, 2021 15:37:25").getTime();
+
+  var x = setInterval(function () {
+    var now = new Date().getTime();
+    var distance = countDownDate - now;
+    var hours = Math.floor(
+      (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+    );
+    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    // Output the result in an element with id="demo"
+    document.getElementById("counter").innerHTML =
+      hours + ":" + minutes + ":" + seconds;
+
+    if (distance < 0) {
+      clearInterval(x);
+      document.getElementById("demo").innerHTML = "EXPIRED";
+    }
+  }, 1000);
+
+  var quiz = [
+    {
+      question_type: "MCQ",
+      question_head: "How many?",
+      question_options: ["1", "2", "3", "4"],
+      question_right_answer: "1",
+    },
+
+    {
+      question_type: "True or False",
+      question_head: "Is it?",
+      question_right_answer: "True",
+    },
+
+    {
+      question_type: "Matching",
+      question_head: "Match the following",
+      question_rows: ["Row 1", "Row 2", "Row 3", "Row 4"],
+      question_cols: ["Column 1", "Column 2", "Column 3", "Column 4"],
+      question_right_answers: {
+        row_1: "col_4",
+        row_2: "col-3",
+        row_3: "col-2",
+        row_4: "col-1",
+      },
+    },
+
+    {
+      question_type: "Essay",
+      question_head: "Describe",
+      question_right_answer: "Bla Bla Bla",
+    },
+  ];
+
+  function mcq(question) {
+    var p = document.getElementById("container");
+    var d = document.createElement("div");
+    d.classList.add("mt-12");
+    var options = "";
+    var question_head = question["question_head"];
+    for (op of question["question_options"]) {
+      options =
+        options +
+        '<div class="col-start-1"></div>' +
+        '<input class="col-span-1" type="radio" name="mcq_option">' +
+        '<p class="col-span-8" style="font-size: 22px;overflow-wrap: break-word;background-color: #f8f9fa;padding:10px 20px">' +
+        op +
+        "</p>";
+    }
+
+    d.innerHTML =
+      '<div class="shadow justify-center" >' +
+      '<div class="grid grid-cols-10 gap-6" style="padding: 50px;">' +
+      '        <div class="col-start-1"></div>' +
+      '<p class="col-span-9" style="font-size: 32px; font-weight: bold;overflow-wrap: break-word;">' +
+      question_head +
+      "</p>" +
+      '<div class="col-span-10 grid grid-cols-10 gap-6 mt-12">' +
+      options +
+      "</div>" +
+      "</div>" +
+      "</div>";
+    p.insertBefore(d, p.lastElementChild);
+  }
+
+  function cols_inputs(cnt, question) {
+    var res = "";
+    for (let i = 0; i < question["question_cols"].length; i++) {
+      res = res + '<input type="radio" name="row' + cnt + '">';
+    }
+    return res;
+  }
+  function matching(question) {
+    var p = document.getElementById("container");
+    var d = document.createElement("div");
+    d.classList.add("mt-12");
+    var question_head = question["question_head"];
+    var rows = "";
+    var cols = "";
+    var cnt = 0;
+
+    for (r of question["question_rows"]) {
+      var inputs = cols_inputs(cnt, question);
+      rows =
+        rows +
+        '<div class="col-span-10 grid grid-cols-10 mt-3" style="background-color: #f8f9fa; padding: 20px;">' +
+        '<div class="col-start-1"></div>' +
+        '<p class="col-span-3" style="overflow-wrap: break-word;">' +
+        r +
+        "</p>" +
+        '<div class="col-span-6 flex justify-evenly">' +
+        inputs +
+        "</div>" +
+        "</div>";
+      cnt++;
+    }
+    for (c of question["question_cols"]) {
+      cols = cols + "<span>" + c + "</span>";
+    }
+
+    d.innerHTML =
+      '<div class="shadow justify-center" >' +
+      '<div class="grid grid-cols-10 gap-6" style="padding: 50px;">' +
+      '        <div class="col-start-1"></div>' +
+      '<p class="col-span-9" style="font-size: 32px; font-weight: bold;overflow-wrap: break-word;">' +
+      question_head +
+      "</p>" +
+      '<div class="col-span-10 grid grid-cols-10 mt-12" >' +
+      '<div class="col-start-4"></div>' +
+      '<div class="col-span-6 flex justify-evenly">' +
+      cols +
+      "</div>" +
+      rows +
+      "</div>";
+
+    p.insertBefore(d, p.lastElementChild);
+  }
+
+  function TorF(question) {
+    var p = document.getElementById("container");
+    var d = document.createElement("div");
+    d.classList.add("mt-12");
+    var question_head = question["question_head"];
+    d.innerHTML =
+      '<div class="shadow justify-center" >' +
+      '<div class="grid grid-cols-10 gap-6" style="padding: 50px;">' +
+      '        <div class="col-start-1"></div>' +
+      '<p class="col-span-9" style="font-size: 32px; font-weight: bold;overflow-wrap: break-word;">' +
+      question_head +
+      "</p>" +
+      '<div class="col-span-10 grid grid-cols-10 mt-12">' +
+      '         <div class="col-start-1"></div>' +
+      '<input class="col-span-1" type="radio" name="tf">' +
+      '<p class="col-span-3" style="font-size: 22px;">True</p>' +
+      '<input class="col-span-1" type="radio" name="tf">' +
+      '<p class="col-span-3" style="font-size: 22px;">False</p>' +
+      "</div>" +
+      "</div>" +
+      "</div>";
+    p.insertBefore(d, p.lastElementChild);
+  }
+
+  function essay(question) {
+    var p = document.getElementById("container");
+    var d = document.createElement("div");
+    d.classList.add("mt-12");
+    var question_head = question["question_head"];
+    d.innerHTML =
+      '<div class="shadow justify-center" >' +
+      '<div class="grid grid-cols-10 gap-6" style="padding: 50px;">' +
+      '        <div class="col-start-1"></div>' +
+      '<p class="col-span-9" style="font-size: 32px; font-weight: bold;overflow-wrap: break-word;">' +
+      question_head +
+      "</p>" +
+      '<div class="col-span-10 grid grid-cols-10 mt-12">' +
+      '         <div class="col-start-1"></div>' +
+      '<textarea class="col-span-8" style="padding: 15px 0px 0px 10px;background-color: #f8f9fa;min-height: 200px;" placeholder="Your Answer"></textarea>' +
+      "</div>" +
+      "</div>" +
+      "</div>";
+    p.insertBefore(d, p.lastElementChild);
+  }
+
+  function fill_data() {
+    for (q of quiz) {
+      if (q["question_type"] == "MCQ") mcq(q);
+      else if (q["question_type"] == "Matching") matching(q);
+      else if (q["question_type"] == "True or False") TorF(q);
+      else essay(q);
+    }
+  }
+</script>
+
+<script
+  src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+  integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+  crossorigin="anonymous"
+></script>
+<script
+  src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+  integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+  crossorigin="anonymous"
+></script>
+<script
+  src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+  integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+  crossorigin="anonymous"
+></script>
+{% endblock content %}
