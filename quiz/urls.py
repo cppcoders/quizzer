@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from . import apis
 
 urlpatterns = [
     path('', views.home, name='quiz-home'),
@@ -11,4 +12,13 @@ urlpatterns = [
     path('quiz', views.quiz, name='quiz-quiz'),
     path('quizzes', views.quizzes, name='quiz-quizzes'),
     path('attemp', views.attemp, name='quiz-attempt'),
+
+    ### Rest Apis END Points
+    path('list_user_groups/', apis.list_groups, name='list-groups'),
+    path('list_groups_quizzes/', apis.list_quizzes_per_groups, name='list-user-groups-exams'),
+    path('get_group_members/<int:group_id>/', apis.get_group_members, name='get-group-memebers'),
+    path('get_group_quizzes/<int:group_id>/', apis.get_group_quizzes, name='get-group-quizzes'),
+    path('remove_group_user/<int:user_id>/<int:group_id>/', apis.remove_user_from_group, name='remove-group-user'),
+    path('get_quiz/<int:quiz_id>/', apis.get_quizz_details, name='get-quiz'),
+    path('get_quiz_questions/<int:quiz_id>/', apis.get_quizz_questions, name='get-quiz-questions')
 ]

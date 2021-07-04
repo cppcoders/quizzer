@@ -52,3 +52,5 @@ def quiz(request):
 @login_required
 def attemp(request):
     return render(request, 'quiz/attemp.html')
+
+

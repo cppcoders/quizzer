@@ -10,23 +10,55 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['url', 'username', 'email', 'groups']
 
 class GroupSerializer(serializers.ModelSerializer):
-    students = serializers.StringRelatedField(many=True)
-    exams = serializers.StringRelatedField(many=True)
+    group_name = serializers.SerializerMethodField()
     class Meta:
         model = Group
-        fields = ['name', 'owner', 'students', 'exams']
+        fields = ['id','group_name',]
+
+    def get_group_name(self, obj):
+        return obj.name
 
 
-class ExamSerializer(serializers.ModelSerializer):
-    questions = serializers.StringRelatedField(many=True)
+class QuizSerializer(serializers.ModelSerializer):
+    quiz_id = serializers.SerializerMethodField()
+    quiz_title = serializers.SerializerMethodField()
+    quiz_group = serializers.SerializerMethodField()
     class Meta:
         model = Exam
-        fields = ['name', 'owner', 'group', 'questions']
+        fields = ['quiz_id','quiz_title', 'quiz_group', 'quiz_date', 'quiz_duration']
 
+    def get_quiz_id(self, obj):
+        return obj.id
+    
+    def get_quiz_title(self, obj):
+        return obj.name
+    
+    def get_quiz_group(self, obj):
+        return obj.group.name
+    
+
+class GroupMemebrsSerializer(serializers.ModelSerializer):
+    memeber_id = serializers.SerializerMethodField()
+    member_name = serializers.SerializerMethodField()
+    memeber_email = serializers.SerializerMethodField()
+    class Meta:
+        model = Student
+        fields = ['memeber_id', 'member_name', 'memeber_email']
+
+    def get_memeber_id(self, obj):
+        return obj.user.id
+    
+    def get_member_name(self, obj):
+        return obj.user.get_full_name()
+    
+    def get_memeber_email(self, obj):
+        return obj.user.email
 
 class QuestionsSerializer(serializers.ModelSerializer):
-    answers = serializers.StringRelatedField(many=True)
-    correct = serializers.StringRelatedField()
+    question_id = serializers.SerializerMethodField()
     class Meta:
         model = Question
-        fields = ['exam', 'text', 'answers', 'correct']
+        fields = ['question_id', 'question_type', 'question_head', 'question_options', 'question_rows', 'question_columns', 'question_right_answer']
+
+    def get_question_id(self, obj):
+        return obj.id
