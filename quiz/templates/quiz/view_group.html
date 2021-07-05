@@ -1,38 +1,11 @@
 {% extends "quiz/base.html" %} {% block bd %} onload="fetch_members() {%endblock bd %} {% block content %}
 
-<!--********************************************  NAV BAR ************************************************-->
-<!---------------------------------------------------------------------------------------------------------->
-<nav class="navbar navbar-dark flex justify-between">
-  <div>
-    <a href="/home"
-      ><span style="font-weight: bold; font-size: 10mm">Quizzer</span></a
-    >
-  </div>
-
-  <div>
-    <a href="/home" class="mx-3"><span>Home</span></a>
-    <a href="/groups" class="mx-3"><span>Groups</span></a>
-    <a href="/quizzes" class="mx-3"><span>Quizzes</span></a>
-    <a href="/about_us" class="mx-3"><span>About us</span></a>
-  </div>
-
-  <div class="flex justify-end" style="padding: 10px">
-    <i class="fas fa-bars fa-2x mt-2 mr-3"></i>
-    <a href="/profile"><img class="avatar" src="media/avatar2.jpg" /></a>
-  </div>
-</nav>
-<!--********************************************  NAV BAR ************************************************-->
-<!---------------------------------------------------------------------------------------------------------->
-
 <!--********************************************  Header ************************************************-->
 <!---------------------------------------------------------------------------------------------------------->
-<header style="background-image: url('static/avatar.jpg')">
-  <div
-    class="header flex justify-end flex-col"
-    style="height: 700px; padding: 30px"
-  >
-    <p class="group_title">Algorithms</p>
-    <p class="group_members_count">3 members</p>
+<header style="background-image: url('media/avatar.jpg'); background-size: cover;">
+  <div class="header flex justify-end flex-col" style="height: 700px; padding: 30px">
+    <p class="group_title" style="color: #fff;font-size: 100px;">Algorithms</p>
+    <p class="group_members_count" style="color: #fff;font-size: 70px;">3 members</p>
   </div>
 </header>
 
@@ -62,7 +35,6 @@
         <th scope="col">ID</th>
         <th scope="col">Name</th>
         <th scope="col">Email</th>
-        <th scope="col">Role</th>
         <th scope="col">Options</th>
       </tr>
     </thead>
@@ -100,157 +72,145 @@
 <script>
   account_type = "Admin";
   function fetch_members() {
-    var members_dict = [
-      {
-        ID: "1",
-        Name: "Ahmed",
-        Email: "Ahmed@gmail.com",
-        Role: "Admin",
-      },
-      {
-        ID: "2",
-        Name: "Ahmed",
-        Email: "Ahmed@gmail.com",
-        Role: "Student",
-      },
-      {
-        ID: "3",
-        Name: "Ahmed",
-        Email: "Ahmed@gmail.com",
-        Role: "Student",
-      },
-    ];
 
-    function options(role) {
-      if (account_type !== "Admin") return "";
-      if (role === "Admin")
-        admin_options =
-          '<div id="admin_account"><button class="btn btn-primary m-1">Remove Admin</button>';
-      else
-        admin_options =
-          '<button class="btn btn-success m-1">Make Admin</button>';
+    fetch('get_group_members/2')
+      .then(function (u) { return u.json(); })
+      .then(function (members_dict) {
+        function options(role) {
+          optionss =
+            '<button class="btn btn-danger m-1">Remove Member</button></div>';
+          return optionss;
+        }
 
-      optionss =
-        admin_options +
-        '<button class="btn btn-danger m-1">Remove Member</button></div>';
+        var tbody = document.getElementById("tbody");
+        for (m of members_dict) {
+          var tr = document.createElement("tr");
+          tr.innerHTML =
+            '<th scope="row">' +
+            m.memeber_id +
+            "</th>" +
+            "<td>" +
+            m.member_name +
+            "</td>" +
+            "<td>" +
+            m.memeber_email +
+            "</td>" +
+            "<td>" +
+            options(m.Role) +
+            "</td>";
+          tbody.appendChild(tr);
+        }
 
-      return optionss;
-    }
+        fetch_quizzes();
+      });
 
-    var tbody = document.getElementById("tbody");
-    for (m of members_dict) {
-      var tr = document.createElement("tr");
-      tr.innerHTML =
-        '<th scope="row">' +
-        m.ID +
-        "</th>" +
-        "<td>" +
-        m.Name +
-        "</td>" +
-        "<td>" +
-        m.Email +
-        "</td>" +
-        "<td>" +
-        m.Role +
-        "</td>" +
-        "<td>" +
-        options(m.Role) +
-        "</td>";
-      tbody.appendChild(tr);
-    }
 
-    fetch_quizzes();
+
   }
 
   function fetch_quizzes() {
-    coming = document.getElementById("coming");
-    prev = document.getElementById("previous");
 
-    var quizzes_dict = [
-      {
-        img_src: "media/avatar.jpg",
-        title: "Sorting",
-        group: "Algortihms",
-        date: "15/2/2021",
-        time: "8:00",
-        duration: "2 hours",
-        link: "#",
-      },
-      {
-        img_src: "media/avatar.jpg",
-        title: "Sorting",
-        group: "Algortihms",
-        date: "11/2/2021",
-        time: "8:00",
-        duration: "2 hours",
-        link: "#",
-      },
-      {
-        img_src: "media/avatar.jpg",
-        title: "Sorting",
-        group: "Algortihms",
-        date: "11/2/2021",
-        time: "8:00",
-        duration: "2 hours",
-        link: "#",
-      },
-    ];
+    // var quizzes_dict = [
+    //   {
+    //     img_src: "media/avatar.jpg",
+    //     title: "Sorting",
+    //     group: "Algortihms",
+    //     date: "15/2/2021",
+    //     time: "8:00",
+    //     duration: "2 hours",
+    //     link: "#",
+    //   },
+    //   {
+    //     img_src: "media/avatar.jpg",
+    //     title: "Sorting",
+    //     group: "Algortihms",
+    //     date: "11/2/2021",
+    //     time: "8:00",
+    //     duration: "2 hours",
+    //     link: "#",
+    //   },
+    //   {
+    //     img_src: "media/avatar.jpg",
+    //     title: "Sorting",
+    //     group: "Algortihms",
+    //     date: "11/2/2021",
+    //     time: "8:00",
+    //     duration: "2 hours",
+    //     link: "#",
+    //   },
+    // ];
 
-    for (q of quizzes_dict) {
-      var cont = document.createElement("div");
-      cont.classList.add("card", "col-md-3", "col-sm-5", "m-4");
-      cont.style.padding = "0px";
-      cont.innerHTML =
-        '<img class="card-img-top" src="media/avatar.jpg" alt="Card image cap"> ' +
-        '<div class="card-body">' +
-        ' <h3 class="card-title" style="text-align: center;"><b>' +
-        q.title +
-        "</b></h3>" +
-        "<h4><b>Quiz Group: </b>" +
-        q.group +
-        "</h4>" +
-        "<p><b>Date: </b>" +
-        q.date +
-        "</p>" +
-        "<p><b>Time: </b> " +
-        q.time +
-        " </p>" +
-        "<p><b>Duration: </b> " +
-        q.duration +
-        " </p>" +
-        '<div class="flex justify-center mt-3"><a href="' +
-        q.link +
-        '" class="btn btn-yellow">View Quiz</a></div>';
 
-      var today = new Date();
-      var dd = String(today.getDate()).padStart(2, "0");
-      var mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
-      var yyyy = today.getFullYear();
+    fetch('get_group_quizzes/2')
+      .then(function (u) { return u.json() })
+      .then(function (quizzes_dict) {
+        
 
-      today = dd + "/" + mm + "/" + yyyy;
-      if (q.date < today) prev.appendChild(cont);
-      else coming.appendChild(cont);
-    }
+        coming = document.getElementById("coming");
+        prev = document.getElementById("previous");
+
+        for (q of quizzes_dict) {
+          q.quiz_date = new Date(Date.parse( q.quiz_date ))
+          var quiz_date = new Date();
+          var dd = String(q.quiz_date.getDate()).padStart(2, "0");
+          var mm = String(q.quiz_date.getMonth() + 1).padStart(2, "0"); //January is 0!
+          var yyyy = q.quiz_date.getFullYear();
+          quiz_date = dd + "/" + mm + "/" + yyyy;
+
+          var quiz_time = q.quiz_date.getUTCHours() + ':' + q.quiz_date.getUTCMinutes();
+          
+
+
+          var cont = document.createElement("div");
+          cont.classList.add("card", "col-md-3", "col-sm-5", "m-4");
+          cont.style.padding = "0px";
+          cont.innerHTML =
+            '<img class="card-img-top" src="media/avatar.jpg" alt="Card image cap"> ' +
+            '<div class="card-body">' +
+            ' <h3 class="card-title" style="text-align: center;"><b>' +
+            q.quiz_title +
+            "</b></h3>" +
+            "<h4><b>Quiz Group: </b>" +
+            q.quiz_group +
+            "</h4>" +
+            "<p><b>Date: </b>" +
+            quiz_date +
+            "</p>" +
+            "<p><b>Time: </b> " +
+            quiz_time +
+            " </p>" +
+            "<p><b>Duration: </b> " +
+            q.quiz_duration + ' Minutes' +
+            " </p>" +
+            '<div class="flex justify-center mt-3"><button '+
+            '" class="btn btn-yellow" onclick="view_quiz('+q.quiz_id +' )" >View Quiz</button></div>';
+
+
+
+          var today = new Date();
+          if (q.quiz_date < today) prev.appendChild(cont);
+          else coming.appendChild(cont);
+        }
+      })
   }
+
+
 
   function create_quiz() {
     window.location.href = "/quiz_maker";
   }
+
+  function view_quiz(quiz_id){
+    localStorage['quiz_id'] = quiz_id
+    window.location.href = "/quiz";
+  }
+
 </script>
 
-<script
-  src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-  integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-  crossorigin="anonymous"
-></script>
-<script
-  src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
-  integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
-  crossorigin="anonymous"
-></script>
-<script
-  src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
-  integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
-  crossorigin="anonymous"
-></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"
+  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+  integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+  integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
 {% endblock content %}
