@@ -82,11 +82,7 @@
       .then(function (u) { return u.json(); })
       .then(function (members_dict) {
         document.getElementById('members_count').innerText = members_dict.length + ' Members'
-        function options(role) {
-          optionss =
-            '<button class="btn btn-danger m-1">Remove Member</button></div>';
-          return optionss;
-        }
+
 
         var tbody = document.getElementById("tbody");
         for (m of members_dict) {
@@ -102,7 +98,7 @@
             m.memeber_email +
             "</td>" +
             "<td>" +
-            options(m.Role) +
+            '<button class="btn btn-danger m-1" onClick="remove_member(' + m.memeber_id + ')">Remove Member</button></div>' +
             "</td>";
           tbody.appendChild(tr);
         }
@@ -113,39 +109,15 @@
 
 
   }
+  function remove_member(member_id) {
+    fetch('remove_group_user/' + member_id + '/' + localStorage['group_id'])
+    setTimeout(function () {
+      location.reload()
+    }, 2000);
+
+  }
 
   function fetch_quizzes() {
-
-    // var quizzes_dict = [
-    //   {
-    //     img_src: "media/avatar.jpg",
-    //     title: "Sorting",
-    //     group: "Algortihms",
-    //     date: "15/2/2021",
-    //     time: "8:00",
-    //     duration: "2 hours",
-    //     link: "#",
-    //   },
-    //   {
-    //     img_src: "media/avatar.jpg",
-    //     title: "Sorting",
-    //     group: "Algortihms",
-    //     date: "11/2/2021",
-    //     time: "8:00",
-    //     duration: "2 hours",
-    //     link: "#",
-    //   },
-    //   {
-    //     img_src: "media/avatar.jpg",
-    //     title: "Sorting",
-    //     group: "Algortihms",
-    //     date: "11/2/2021",
-    //     time: "8:00",
-    //     duration: "2 hours",
-    //     link: "#",
-    //   },
-    // ];
-
 
     fetch('get_group_quizzes/2')
       .then(function (u) { return u.json() })
