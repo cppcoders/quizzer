@@ -1,16 +1,13 @@
 {% extends "quiz/base.html" %} {% block bd %} onload="fill_data() {% endblock bd%} {% block content %}
 <!--********************************************  Quiz info **********************************************-->
 <!---------------------------------------------------------------------------------------------------------->
-<div
-  class="grid grid-cols-3 grid-rows-2 gap-6 shadow"
-  style="padding: 50px; font-size: 22px; font-weight: 600"
->
+<div class="grid grid-cols-3 grid-rows-2 gap-6 shadow" style="padding: 50px; font-size: 22px; font-weight: 600">
   <div class="col-start-1"></div>
-  <p class="col-span-1 row-span-1">Group: <span>Algorithms</span></p>
-  <p class="col-span-1 row-span-1">Date: <span>25/4/2021</span></p>
+  <p class="col-span-1 row-span-1">Group: <span id="group">Algorithms</span></p>
+  <p class="col-span-1 row-span-1">Date: <span id="date">25/4/2021</span></p>
   <div class="col-start-1"></div>
-  <p class="col-span-1 row-span-1">Time: <span>5:00</span></p>
-  <p class="col-span-1 row-span-1">Duration: <span>2:00</span></p>
+  <p class="col-span-1 row-span-1">Time: <span id="time">5:00</span></p>
+  <p class="col-span-1 row-span-1">Duration: <span id="duration">2:00</span></p>
 
   <div class="col-start-1"></div>
   <p class="col-span-1" style="text-align: center">
@@ -38,26 +35,30 @@
 </footer>
 
 <script>
-  var countDownDate = new Date("Oct 23, 2021 15:37:25").getTime();
 
-  var x = setInterval(function () {
-    var now = new Date().getTime();
-    var distance = countDownDate - now;
-    var hours = Math.floor(
-      (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-    );
-    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+  fetch('get_quiz/' + localStorage['quiz_id'])
+    .then(function (u) { return u.json() })
+    .then(function (data) {
+      var countDownDate = new Date(Date.parse(data.quiz_date) ).getTime();
+      var x = setInterval(function () {
+        var now = new Date().getTime();
+        var distance = countDownDate - now;
+        var hours = Math.floor(
+          (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+        );
+        var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-    // Output the result in an element with id="demo"
-    document.getElementById("counter").innerHTML =
-      hours + ":" + minutes + ":" + seconds;
+        // Output the result in an element with id="demo"
+        document.getElementById("counter").innerHTML =
+          hours + ":" + minutes + ":" + seconds;
 
-    if (distance < 0) {
-      clearInterval(x);
-      document.getElementById("demo").innerHTML = "EXPIRED";
-    }
-  }, 1000);
+        if (distance <= 0) {
+          clearInterval(x);
+        }
+      }, 1000);
+
+    })
 
   var quiz = [
     {
@@ -223,6 +224,29 @@
   }
 
   function fill_data() {
+
+    fetch('get_quiz/' + localStorage['quiz_id'])
+      .then(function (u) { return u.json() })
+      .then(function (data) {
+        var e = document.getElementById("group");
+        e.innerText = data.quiz_group;
+
+        e = document.getElementById("date");
+        data.quiz_date = new Date(Date.parse(data.quiz_date))
+        var quiz_date = new Date();
+        var dd = String(data.quiz_date.getDate()).padStart(2, "0");
+        var mm = String(data.quiz_date.getMonth() + 1).padStart(2, "0"); //January is 0!
+        var yyyy = data.quiz_date.getFullYear();
+        quiz_date = dd + "/" + mm + "/" + yyyy;
+        e.innerText = quiz_date;
+
+        e = document.getElementById("time");
+        var quiz_time = data.quiz_date.getUTCHours() + ':' + data.quiz_date.getUTCMinutes();
+        e.innerText = quiz_time;
+
+        e = document.getElementById("duration");
+        e.innerText = data.quiz_duration + ' Minutes'
+      });
     for (q of quiz) {
       if (q["question_type"] == "MCQ") mcq(q);
       else if (q["question_type"] == "Matching") matching(q);
@@ -232,15 +256,10 @@
   }
 </script>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-<script
-  src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
-  integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
-  crossorigin="anonymous"
-></script>
-<script
-  src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
-  integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
-  crossorigin="anonymous"
-></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"
+  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+  integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+  integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
 {% endblock content %}

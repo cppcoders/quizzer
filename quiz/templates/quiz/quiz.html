@@ -18,7 +18,7 @@
       <b>Duration:</b> <span id="duration">1:30</span>
     </p>
     <p class="col-span-12 row-span-1" style="color: red; display: none" id="not_yet">
-      Not Yet
+      not Allowed
     </p>
     <button class="btn btn-yellow col-span-12" onclick="attemp()">
       Attemp now
@@ -36,52 +36,54 @@
 </footer>
 
 <script>
-  var quiz_data = {
-    groupd: "Algorithms",
-    date: "25/4/2021",
-    time: {
-      hours: "5",
-      minutes: "15",
-    },
-    duration: {
-      hours: "2",
-      minutes: "00",
-    },
-  };
+
+
 
   function fill_data() {
-    var e = document.getElementById("group");
-    e.innerText = quiz_data["groupd"];
 
-    e = document.getElementById("date");
-    e.innerText = quiz_data["date"];
+    fetch('get_quiz/' + localStorage['quiz_id'])
+      .then(function (u) { return u.json() })
+      .then(function (data) {
+        var e = document.getElementById("group");
+        e.innerText = data.quiz_group;
 
-    e = document.getElementById("time");
-    e.innerText =
-      quiz_data["time"]["hours"] + ":" + quiz_data["time"]["minutes"];
+        e = document.getElementById("date");
+        data.quiz_date = new Date(Date.parse(data.quiz_date))
+        var quiz_date = new Date();
+        var dd = String(data.quiz_date.getDate()).padStart(2, "0");
+        var mm = String(data.quiz_date.getMonth() + 1).padStart(2, "0"); //January is 0!
+        var yyyy = data.quiz_date.getFullYear();
+        quiz_date = dd + "/" + mm + "/" + yyyy;
+        e.innerText = quiz_date;
 
-    e = document.getElementById("duration");
-    e.innerText =
-      quiz_data["duration"]["hours"] + ":" + quiz_data["duration"]["minutes"];
+        e = document.getElementById("time");
+        var quiz_time = data.quiz_date.getUTCHours() + ':' + data.quiz_date.getUTCMinutes();
+        e.innerText = quiz_time;
+
+        e = document.getElementById("duration");
+        e.innerText = data.quiz_duration
+      });
+
+
   }
-
   function attemp() {
-    /*var date = document.getElementById('date') ;
-                        var today = new Date() ;
-                        var today_date = today.getDate() + '/' + (today.getMonth()+1)  +'/' + today.getFullYear() ;
-                        var today_time = today.getHours() + ':' + today.getMinutes();
-                        if(today_date == quiz_data["date"] && today.getHours() == quiz_data["time"]["hours"] &&  parseInt(today.getMinutes()) == parseInt(quiz_data["time"]["minutes"] ) )
-                        {
-                                window.location.href = "/attemp";
-                        }
-                        else
-                        {
-                                var not_yet = document.getElementById('not_yet')  ;
-                                not_yet.style.display = 'block'
-                        }*/
+    fetch('get_quiz/' + localStorage['quiz_id'])
+      .then(function (u) { return u.json() })
+      .then(function (data) {
+        data.quiz_date = new Date(Date.parse(data.quiz_date))
+        var now = new Date();
+        if (now >= data.quiz_date && now <= data.quiz_date + (data.duration*60) ) {
+          window.location.href = "/attemp";
+        }
+        else {
+          var not_yet = document.getElementById('not_yet');
+          not_yet.style.display = 'block'
+        }
 
-    window.location.href = "/attemp";
+        // window.location.href = "/attemp";
+      });
   }
+
 </script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"
   integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
