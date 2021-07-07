@@ -10,9 +10,9 @@ class Exam(models.Model):
     name = models.CharField(max_length=255)
     group = models.ForeignKey(
         Group, on_delete=models.CASCADE, related_name='exams')
-    quiz_date = models.DateTimeField(auto_now_add=True)
+    quiz_date = models.DateTimeField(null=True, blank=True)
     quiz_duration = models.IntegerField(default=0)
-
+    quiz_creation_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
@@ -26,20 +26,10 @@ class Question(models.Model):
     question_options = models.CharField(max_length=150, null=True, blank=True)
     question_rows = models.CharField(max_length=255, null=True, blank=True)
     question_columns = models.CharField(max_length=255, null=True, blank=True)
-    question_right_answer = models.CharField(max_length=255, null=False, blank=False)
+    question_right_answer = models.CharField(max_length=255, null=True, blank=True)
     
     def __str__(self):
         return self.question_head
-
-
-class Answer(models.Model):
-    question = models.ForeignKey(
-        Question, on_delete=models.CASCADE, related_name='answers')
-    text = models.CharField('Answer', max_length=255)
-    is_correct = models.BooleanField('Correct answer', default=False)
-
-    def __str__(self):
-        return self.text
 
 
 class Attempt(models.Model):
@@ -47,12 +37,10 @@ class Attempt(models.Model):
         Student, on_delete=models.CASCADE, related_name='attempts')
     exam = models.ForeignKey(
         Exam, on_delete=models.CASCADE, related_name='attempts')
+    question = models.ForeignKey(
+        Question, on_delete=models.CASCADE, related_name='attempt_questions')
     time = models.DateTimeField(default=timezone.now)
     grade = models.FloatField()
 
 
-class AttemptAnswers(models.Model):
-    attempt = models.ForeignKey(
-        Attempt, on_delete=models.CASCADE, related_name='answers')
-    answer = models.ForeignKey(
-        Answer, on_delete=models.CASCADE, related_name='attempts')
+

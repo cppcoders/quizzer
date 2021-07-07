@@ -1,4 +1,5 @@
 
+from quiz.views import quiz
 from quiz.models import *
 from users.models import *
 from rest_framework import serializers
@@ -62,3 +63,29 @@ class QuestionsSerializer(serializers.ModelSerializer):
 
     def get_question_id(self, obj):
         return obj.id
+
+
+class AttemptSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Attempt
+        fields = '__all__'
+        read_only_fields = ['owner']
+    
+
+class CreateQuizzSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Exam
+        fields = '__all__'
+        read_only_fields = ['owner']
+
+
+class CreateQuestionSerializer(serializers.ModelSerializer):
+    question_options = serializers.CharField(required=False)
+    question_rows = serializers.CharField(required=False)
+    question_columns = serializers.CharField(required=False)
+    question_right_answer = serializers.CharField(required=False)
+    class Meta:
+        model = Question
+        fields = '__all__'
+        
