@@ -20,6 +20,7 @@
 
 <!--********************************************  Quiz Container *****************************************-->
 <!---------------------------------------------------------------------------------------------------------->
+{% csrf_token %}
 <div class="container mt-24" id="container">
   <div class="grid grid-cols-10 mt-40">
     <button class="btn btn-yellow col-span-10">Submit</button>
@@ -36,6 +37,31 @@
 
 <script>
 
+
+
+let csrfToken =  document.querySelector('[name=csrfmiddlewaretoken]').value;;
+  console.log(csrfToken);
+
+  const headers = new Headers({
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+        }); 
+
+  let fetchRes = fetch('join_group/', {
+      method: 'POST',
+      headers,
+      credentials: 'include',
+      body: JSON.stringify({
+        "exam": String(localStorage['quiz_id']),
+        "question": '7',
+        "grade": '7'
+      })
+    });
+    fetchRes.then(res =>
+            res.json()).then(d => {
+                console.log(d)
+            })
+    
   fetch('get_quiz/' + localStorage['quiz_id'])
     .then(function (u) { return u.json() })
     .then(function (data) {

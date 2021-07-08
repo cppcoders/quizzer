@@ -17,8 +17,9 @@
             <div class="form-group col-8">
               <input type="text" name="group_id" class="form-control" placeholder="Group ID" value="" />
             </div>
+            {% csrf_token %}
             <div class="form-group">
-              <button type="button" onclick="" class="btn btn-yellow">
+              <button type="button" id="join_group_id" onclick="joinGroup()" class="btn btn-yellow">
                 Join
               </button>
             </div>
@@ -107,12 +108,45 @@
 
   }
 
+  function getCookie(name) {
+    if (!document.cookie) {
+      return null;
+    }
+
+    const xsrfCookies = document.cookie.split(';')
+      .map(c => c.trim())
+      .filter(c => c.startsWith(name + '='));
+
+    if (xsrfCookies.length === 0) {
+      return null;
+    }
+    return decodeURIComponent(xsrfCookies[0].split('=')[1]);
+  }
+
+  function joinGroup() {
+    
+    // let fetchRes = fetch('join_group/', {
+    //   method: 'POST',
+    //   headers,
+    //   credentials: 'include',
+    //   body: JSON.stringify({
+    //     group_id: id
+    //   })
+    // });
+    // fetchRes.then(res =>
+    //         res.json()).then(d => {
+    //             console.log(d)
+    //         })
+
+
+  
+  }
+
   function fetch_quizzes() {
 
     fetch('list_groups_quizzes/')
       .then(function (u) { return u.json() })
       .then(function (quizzes_dict) {
-        console.log(quizzes_dict)
 
         var cont = document.getElementById("quizzes_container");
         for (q of quizzes_dict) {

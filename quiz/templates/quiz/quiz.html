@@ -72,15 +72,15 @@
       .then(function (data) {
         data.quiz_date = new Date(Date.parse(data.quiz_date))
         var now = new Date();
-        if (now >= data.quiz_date && now <= data.quiz_date + (data.duration*60) ) {
-          window.location.href = "/attemp";
-        }
-        else {
-          var not_yet = document.getElementById('not_yet');
-          not_yet.style.display = 'block'
-        }
+        // if (now >= data.quiz_date && now <= data.quiz_date + (data.duration*60) ) {
+        //   window.location.href = "/attemp";
+        // }
+        // else {
+        //   var not_yet = document.getElementById('not_yet');
+        //   not_yet.style.display = 'block'
+        // }
 
-        // window.location.href = "/attemp";
+        window.location.href = "/attemp";
       });
   }
 
