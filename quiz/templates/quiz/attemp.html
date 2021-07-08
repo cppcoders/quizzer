@@ -39,33 +39,36 @@
 
 
 
-let csrfToken =  document.querySelector('[name=csrfmiddlewaretoken]').value;;
-  console.log(csrfToken);
+  // let csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;;
+  // console.log(csrfToken);
 
-  const headers = new Headers({
-            'Content-Type': 'application/json',
-            'X-CSRFToken': csrfToken
-        }); 
+  // const headers = new Headers({
+  //   'Content-Type': 'application/json',
+  //   'X-CSRFToken': csrfToken
+  // });
 
-  let fetchRes = fetch('join_group/', {
-      method: 'POST',
-      headers,
-      credentials: 'include',
-      body: JSON.stringify({
-        "exam": String(localStorage['quiz_id']),
-        "question": '7',
-        "grade": '7'
-      })
-    });
-    fetchRes.then(res =>
-            res.json()).then(d => {
-                console.log(d)
-            })
+  // let fetchRes = fetch('answer_exam/', {
+  //   method: 'POST',
+  //   headers,
+  //   credentials: 'include',
+  //   body: JSON.stringify(
+  //     [
+  //       {
+  //         "exam": String(localStorage['quiz_id']),
+  //         "question": '7',
+  //         "grade": '7'
+  //       }
+  //     ]
+  //   )});
+  //   fetchRes.then(res =>
+  //     res.json()).then(d => {
+  //       console.log(d)
+  //     })
     
   fetch('get_quiz/' + localStorage['quiz_id'])
     .then(function (u) { return u.json() })
     .then(function (data) {
-      var countDownDate = new Date(Date.parse(data.quiz_date) ).getTime();
+      var countDownDate = new Date(Date.parse(data.quiz_date)).getTime();
       var x = setInterval(function () {
         var now = new Date().getTime();
         var distance = countDownDate - now;

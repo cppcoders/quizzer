@@ -6,6 +6,8 @@
   <div class="header flex justify-end flex-col" style="height: 700px; padding: 30px">
     <p class="group_title" id="title" style="color: #fff;font-size: 100px;">Algorithms</p>
     <p class="group_members_count" id="members_count" style="color: #fff;font-size: 70px;">3 members</p>
+    <p class="group_id" id="group_id" style="color: #fff;font-size: 70px;">Group Id: </p>
+    
   </div>
 </header>
 
@@ -70,13 +72,15 @@
 </footer>
 
 <script>
-  account_type = "Admin";
+  document.getElementById('group_id').innerText = 'Group Id: ' + localStorage['group_id']
+  document.getElementById('title').innerText =  localStorage['group_name']
+  
+
   function fetch_members() {
     fetch('get_group_quizzes/' + localStorage['group_id'])
       .then(function (u) { return u.json() })
       .then(function (data) {
-
-        document.getElementById('title').innerText = data[0].quiz_group
+          document.getElementById('title').innerText = data[0].quiz_group
       })
     fetch('get_group_members/' + localStorage['group_id'])
       .then(function (u) { return u.json(); })

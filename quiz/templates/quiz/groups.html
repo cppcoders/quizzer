@@ -15,7 +15,7 @@
         <div class="mt-5">
           <form class="row">
             <div class="form-group col-8">
-              <input type="text" name="group_name" class="form-control" placeholder="Group Name" value="" />
+              <input type="text" name="group_name" id="create_group_name" class="form-control" placeholder="Group Name" value="" />
             </div>
             <div class="form-group">
               <button type="button" onclick="create_group()" class="btn btn-yellow">
@@ -37,10 +37,12 @@
         <div class="mt-5">
           <form class="row">
             <div class="form-group col-8">
-              <input type="text" name="group_id" class="form-control" placeholder="Group ID" value="" />
+              {% csrf_token %}
+              <input type="text" name="group_id" id="join_group_id" class="form-control" placeholder="Group ID"
+                value="" />
             </div>
             <div class="form-group">
-              <button type="button" onclick="join_group()" class="btn btn-yellow">
+              <button type="button" onclick="joinGroup()" class="btn btn-yellow">
                 Join
               </button>
             </div>
@@ -77,6 +79,7 @@
     var e = document.getElementById("create_group");
     e.style.display = "none";
   }
+
   function fetch_groups() {
     fetch('list_user_groups/')
       .then(function (u) { return u.json() })
@@ -100,12 +103,75 @@
         }
       })
   }
+  function joinGroup() {
+
+    let csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;;
+    console.log(csrfToken);
+    id = document.getElementById('join_group_id').value
+    console.log(id)
+    const headers = new Headers({
+      'Content-Type': 'application/json',
+      'X-CSRFToken': csrfToken
+    });
+
+    let fetchRes = fetch('join_group/', {
+      method: 'POST',
+      headers,
+      credentials: 'include',
+      body: JSON.stringify({
+        "group_id": id,
+      })
+    });
+    fetchRes.then(res =>
+      res.json()).then(d => {
+        location.reload()
+      })
+  }
+
+  function create_group() {
+    
+
+    let csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;;
+    name = document.getElementById('create_group_name').value
+    console.log(name)
+    const headers = new Headers({
+      'Content-Type': 'application/json',
+      'X-CSRFToken': csrfToken
+    });
+
+    let fetchRes = fetch('create_group/', {
+      method: 'POST',
+      headers,
+      credentials: 'include',
+      body: JSON.stringify({
+        "name": name,
+      })
+    });
+    fetchRes.then(res =>
+      res.json()).then(d => {
+        on_clicked_group(d.id )
+      })
+
+  }
+
 
   function on_clicked_group(group_id) {
+    fetch('list_user_groups/')
+      .then(function (u) { return u.json() })
+      .then(function (groups_dict) {
+        for (g of groups_dict) {
+          if (g.id == group_id) {
+            console.log(g.id)
+            localStorage['group_id'] = g.id
+            localStorage['group_name'] = g.group_name
+            window.location.href = "/view_group";
+          }
+        }
+      })
 
-    localStorage['group_id'] = group_id
-    window.location.href = "/view_group";
   }
+
+
 </script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"
   integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
