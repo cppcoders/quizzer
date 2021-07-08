@@ -123,7 +123,7 @@
 
   function fetch_quizzes() {
 
-    fetch('get_group_quizzes/2')
+    fetch('get_group_quizzes/' + localStorage['group_id'])
       .then(function (u) { return u.json() })
       .then(function (quizzes_dict) {
 

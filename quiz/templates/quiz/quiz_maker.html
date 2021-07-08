@@ -159,7 +159,6 @@
         '<i class="fas fa-trash-alt" style="color: #fff;"></i> Delete</button></div>' +
         "<!--------------------------------------Questions conrainer  -------------------------------->";
     } else if (select.value == "Matching") {
-      console.log(1);
       p.innerHTML =
         "<!--------------------------------------Question conrainer  -------------------------------->" +
         '<div class="question shadow  justify-center ">' +
@@ -331,6 +330,11 @@
       '<i class="fas fa-times fa-2x delete_icon"' +
       'onclick="delete_option(this)"></i></div>';
     q.insertBefore(new_row, q.lastElementChild);
+  }
+
+  function create_quiz()
+  {
+
   }
 </script>
 

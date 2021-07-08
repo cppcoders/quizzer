@@ -23,7 +23,7 @@
 {% csrf_token %}
 <div class="container mt-24" id="container">
   <div class="grid grid-cols-10 mt-40">
-    <button class="btn btn-yellow col-span-10">Submit</button>
+    <button class="btn btn-yellow col-span-10" onclick="submit_answers()">Submit</button>
   </div>
 </div>
 <!--********************************************  Quiz Container *****************************************-->
@@ -38,33 +38,40 @@
 <script>
 
 
+  let cnt = 0;
+  
+    let csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;;
+    console.log(csrfToken);
 
-  // let csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;;
-  // console.log(csrfToken);
+    const headers = new Headers({
+      'Content-Type': 'application/json',
+      'X-CSRFToken': csrfToken
+    });
 
-  // const headers = new Headers({
-  //   'Content-Type': 'application/json',
-  //   'X-CSRFToken': csrfToken
-  // });
+    function fetchAnswer(question_id , question_grade) {
+      console.log(localStorage['quiz_id'])
+    let fetchRes = fetch('answer_exam/', {
+      method: 'POST',
+      headers,
+      credentials: 'include',
+      body: JSON.stringify(
+        [
+          {
+            "exam": String(localStorage['quiz_id']),
+            "question": question_id,
+            "grade": question_grade
+          }
+        ]
+      )
+    });
+    fetchRes.then(res =>
+      res.json()).then(d => {
+        console.log(d)
+      })
+  }
 
-  // let fetchRes = fetch('answer_exam/', {
-  //   method: 'POST',
-  //   headers,
-  //   credentials: 'include',
-  //   body: JSON.stringify(
-  //     [
-  //       {
-  //         "exam": String(localStorage['quiz_id']),
-  //         "question": '7',
-  //         "grade": '7'
-  //       }
-  //     ]
-  //   )});
-  //   fetchRes.then(res =>
-  //     res.json()).then(d => {
-  //       console.log(d)
-  //     })
-    
+
+
   fetch('get_quiz/' + localStorage['quiz_id'])
     .then(function (u) { return u.json() })
     .then(function (data) {
@@ -89,39 +96,7 @@
 
     })
 
-  var quiz = [
-    {
-      question_type: "MCQ",
-      question_head: "How many?",
-      question_options: ["1", "2", "3", "4"],
-      question_right_answer: "1",
-    },
 
-    {
-      question_type: "True or False",
-      question_head: "Is it?",
-      question_right_answer: "True",
-    },
-
-    {
-      question_type: "Matching",
-      question_head: "Match the following",
-      question_rows: ["Row 1", "Row 2", "Row 3", "Row 4"],
-      question_cols: ["Column 1", "Column 2", "Column 3", "Column 4"],
-      question_right_answers: {
-        row_1: "col_4",
-        row_2: "col-3",
-        row_3: "col-2",
-        row_4: "col-1",
-      },
-    },
-
-    {
-      question_type: "Essay",
-      question_head: "Describe",
-      question_right_answer: "Bla Bla Bla",
-    },
-  ];
 
   function mcq(question) {
     var p = document.getElementById("container");
@@ -132,9 +107,9 @@
     for (op of question["question_options"]) {
       options =
         options +
-        '<div class="col-start-1"></div>' +
+        '<div class="col-start-1" name="right_wrong"></div>' +
         '<input class="col-span-1" type="radio" name="mcq_option">' +
-        '<p class="col-span-8" style="font-size: 22px;overflow-wrap: break-word;background-color: #f8f9fa;padding:10px 20px">' +
+        '<p class="col-span-8" name ="mcq_value" style="font-size: 22px;overflow-wrap: break-word;background-color: #f8f9fa;padding:10px 20px">' +
         op +
         "</p>";
     }
@@ -146,7 +121,7 @@
       '<p class="col-span-9" style="font-size: 32px; font-weight: bold;overflow-wrap: break-word;">' +
       question_head +
       "</p>" +
-      '<div class="col-span-10 grid grid-cols-10 gap-6 mt-12">' +
+      '<div class="col-span-10 grid grid-cols-10 gap-6 mt-12" name="mcq" id="' + cnt + '" >' +
       options +
       "</div>" +
       "</div>" +
@@ -156,12 +131,15 @@
 
   function cols_inputs(cnt, question) {
     var res = "";
-    for (let i = 0; i < question["question_cols"].length; i++) {
+    for (let i = 0; i < question["question_columns"].length; i++) {
       res = res + '<input type="radio" name="row' + cnt + '">';
     }
     return res;
   }
   function matching(question) {
+    question.question_rows = JSON.parse(question.question_rows)
+    question.question_columns = JSON.parse(question.question_columns)
+
     var p = document.getElementById("container");
     var d = document.createElement("div");
     d.classList.add("mt-12");
@@ -185,7 +163,8 @@
         "</div>";
       cnt++;
     }
-    for (c of question["question_cols"]) {
+
+    for (c of question["question_columns"]) {
       cols = cols + "<span>" + c + "</span>";
     }
 
@@ -196,9 +175,9 @@
       '<p class="col-span-9" style="font-size: 32px; font-weight: bold;overflow-wrap: break-word;">' +
       question_head +
       "</p>" +
-      '<div class="col-span-10 grid grid-cols-10 mt-12" >' +
+      '<div class="col-span-10 grid grid-cols-10 mt-12" id="' + cnt + '" >' +
       '<div class="col-start-4"></div>' +
-      '<div class="col-span-6 flex justify-evenly">' +
+      '<div class="col-span-6 flex justify-evenly  ">' +
       cols +
       "</div>" +
       rows +
@@ -219,7 +198,7 @@
       '<p class="col-span-9" style="font-size: 32px; font-weight: bold;overflow-wrap: break-word;">' +
       question_head +
       "</p>" +
-      '<div class="col-span-10 grid grid-cols-10 mt-12">' +
+      '<div class="col-span-10 grid grid-cols-10 mt-12 id="' + cnt + '"">' +
       '         <div class="col-start-1"></div>' +
       '<input class="col-span-1" type="radio" name="tf">' +
       '<p class="col-span-3" style="font-size: 22px;">True</p>' +
@@ -243,7 +222,7 @@
       '<p class="col-span-9" style="font-size: 32px; font-weight: bold;overflow-wrap: break-word;">' +
       question_head +
       "</p>" +
-      '<div class="col-span-10 grid grid-cols-10 mt-12">' +
+      '<div class="col-span-10 grid grid-cols-10 mt-12 id="' + cnt + '"">' +
       '         <div class="col-start-1"></div>' +
       '<textarea class="col-span-8" style="padding: 15px 0px 0px 10px;background-color: #f8f9fa;min-height: 200px;" placeholder="Your Answer"></textarea>' +
       "</div>" +
@@ -276,13 +255,63 @@
         e = document.getElementById("duration");
         e.innerText = data.quiz_duration + ' Minutes'
       });
-    for (q of quiz) {
-      if (q["question_type"] == "MCQ") mcq(q);
-      else if (q["question_type"] == "Matching") matching(q);
-      else if (q["question_type"] == "True or False") TorF(q);
-      else essay(q);
-    }
+
+    fetch('get_quiz_questions/' + localStorage['quiz_id'])
+      .then(function (u) { return u.json() })
+      .then(function (data) {
+        for (q of data) {
+          q.question_options = JSON.parse(q.question_options);
+          if (q.question_type == "MCQ") mcq(q);
+          else if (q.question_type == "Matching") matching(q);
+          else if (q["question_type"] == "True or False") TorF(q);
+          else essay(q);
+          cnt += 1;
+        }
+      })
+
+
   }
+
+
+  function submit_answers() {
+    fetch('get_quiz_questions/' + localStorage['quiz_id'])
+      .then(function (u) { return u.json() })
+      .then(function (data) {
+        let i = 0;
+
+        while (i < 1) {
+          let e = document.getElementById('0')
+
+          if (e.getAttribute('name') == 'mcq') {
+            let options = e.querySelectorAll('input[name="mcq_option"]');
+            let values = e.querySelectorAll('p[name="mcq_value"]')
+            let right_wrong = e.querySelectorAll('div[name="right_wrong"]')
+
+            let = j = 0;
+            for (option of options) {
+              if (option.checked) {
+                if (values[j].innerText == data[i].question_right_answer) {
+                  fetchAnswer(data[i].question_id , 10)
+                  right_wrong[j].setAttribute('style', 'background-color:#19d513');
+                }
+                else
+                {
+                  fetchAnswer(data[i].question_id , 0)
+                  right_wrong[j].setAttribute('style', 'background-color:red');
+
+                }
+              }
+              if (values[j].innerText == data[i].question_right_answer)
+                right_wrong[j].setAttribute('style', 'background-color:#19d513');
+              j += 1
+            }
+          }
+          i += 1
+        }
+      })
+  }
+
+
 </script>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"

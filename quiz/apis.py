@@ -22,8 +22,13 @@ from quiz import serializers
 @csrf_exempt
 def list_groups(request):
     user = request.user
-    student = get_object_or_404(Student, user=user)
-    groups = student.groups.all()
+    try:
+        student = get_object_or_404(Student, user=user)
+        groups = student.groups.all()
+    except:
+        teacher = get_object_or_404(Teacher, user=user)
+        groups = teacher.groups.all()
+    
     serializer = GroupSerializer(groups, many=True)
     return Response(serializer.data, 200)
 
@@ -34,8 +39,12 @@ def list_groups(request):
 @csrf_exempt
 def list_quizzes_per_groups(request):
     user = request.user
-    student = get_object_or_404(Student, user=user)
-    groups = student.groups.all()
+    try:
+        student = get_object_or_404(Student, user=user)
+        groups = student.groups.all()
+    except:
+        teacher = get_object_or_404(Teacher, user=user)
+        groups = teacher.groups.all()
     qroup_quizzes = Exam.objects.filter(group__in=groups)
     serializer = QuizSerializer(qroup_quizzes, many=True)
     return Response(serializer.data, 200)

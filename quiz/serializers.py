@@ -85,6 +85,8 @@ class CreateQuestionSerializer(serializers.ModelSerializer):
     question_rows = serializers.CharField(required=False)
     question_columns = serializers.CharField(required=False)
     question_right_answer = serializers.CharField(required=False)
+    question_type = serializers.CharField(required=False)
+    question_head = serializers.CharField(required=False)
     class Meta:
         model = Question
         fields = '__all__'
