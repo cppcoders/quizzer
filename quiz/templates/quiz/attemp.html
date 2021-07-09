@@ -38,18 +38,16 @@
 <script>
 
 
-  let questions_id = 0;
 
   let csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;;
   console.log(csrfToken);
 
-  function gradeEssay(text)
-  {
-    if(text.length < 50)
-      return 0 
-    return Math.max( Math.floor(Math.random() * text.length)%11 , 5) ;
+  function gradeEssay(text) {
+    if (text.length < 50)
+      return 0
+    return Math.max(Math.floor(Math.random() * text.length) % 11, 5);
   }
-  
+
   const headers = new Headers({
     'Content-Type': 'application/json',
     'X-CSRFToken': csrfToken
@@ -111,6 +109,11 @@
     d.classList.add("mt-12");
     var options = "";
     var question_head = question["question_head"];
+    question["question_options"] = question["question_options"].split(',')
+    if (!isIterable(q['question_options'])) {
+            q.question_options = [q.question_options]
+          }
+        
     for (op of question["question_options"]) {
       options =
         options +
@@ -144,8 +147,8 @@
     return res;
   }
   function matching(question) {
-    question.question_rows = JSON.parse(question.question_rows)
-    question.question_columns = JSON.parse(question.question_columns)
+    question.question_rows = question.question_rows.split(',')
+    question.question_columns = question.question_columns.split(',')
 
     var p = document.getElementById("container");
     var d = document.createElement("div");
@@ -216,7 +219,7 @@
       "</div>";
     p.insertBefore(d, p.lastElementChild);
   }
-  
+
 
 
   function essay(question) {
@@ -238,6 +241,14 @@
       "</div>" +
       "</div>";
     p.insertBefore(d, p.lastElementChild);
+  }
+
+  function isIterable(obj) {
+    // checks for null and undefined
+    if (obj == null) {
+      return false;
+    }
+    return typeof obj[Symbol.iterator] === 'function';
   }
 
   function fill_data() {
@@ -268,14 +279,14 @@
     fetch('get_quiz_questions/' + localStorage['quiz_id'])
       .then(function (u) { return u.json() })
       .then(function (data) {
+        console.log(data)
         for (q of data) {
-          q.question_options = JSON.parse(q.question_options);
 
-          if (q.question_type == "MCQ") mcq(q);
-          else if (q.question_type == "Matching") matching(q);
-          else if (q["question_type"] == "True or False") TorF(q);
+
+          if (q.question_type == "mcq") mcq(q);
+          else if (q.question_type == "matching") matching(q);
+          else if (q["question_type"] == "torf") TorF(q);
           else essay(q);
-          questions_id += 1;
         }
       })
 
@@ -335,9 +346,7 @@
           else if (e.getAttribute('name') == 'matching') {
 
 
-            let right_answers = JSON.parse(question.question_right_answer)
-            right_answers = right_answers.substring(2, right_answers.length - 2)
-            right_answers = right_answers.split(',')
+            let right_answers = question.question_right_answer.split(',')
             let right_wrong = e.querySelectorAll('div[name="right_wrong"]')
 
             let rows = e.querySelectorAll('div[name="row"]');
@@ -394,7 +403,7 @@
           else {
             let right_wrong = e.querySelector('div[name="right_wrong"]')
             let answer = document.getElementById('essay_text')
-            let question_score = gradeEssay(answer.value) ; 
+            let question_score = gradeEssay(answer.value);
             p.innerText = question_score.toString() + '/ 10'
             e.appendChild(document.createElement('br'))
             e.appendChild(p)
@@ -405,8 +414,7 @@
       })
   }
 
-  function gradeEsssay(question_answer)
-  {
+  function gradeEsssay(question_answer) {
     let fetchRes = fetch('grade_essay/', {
       method: 'POST',
       headers,
