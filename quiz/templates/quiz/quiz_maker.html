@@ -3,46 +3,33 @@
 <!--********************************************  Create quiz **********************************************-->
 <!---------------------------------------------------------------------------------------------------------->
 <div class="container" id="container">
+  {% csrf_token %}
   <!----------------------------------------Quiz title and description --------------------------------->
   <div class="quiz-discription shadow p-5 mt-5 grid grid-rows-2">
     <div style="font-size: 32px" class="row-span-1 grid grid-cols-3">
-      <input placeholder="Quiz title here" class="col-span-2" />
+      <input placeholder="Quiz title here" class="col-span-2" id="quiz_title" />
     </div>
 
-    <div style="font-size: 22px" class="row-span-1 grid grid-cols-1">
-      <textarea
-        placeholder="Quiz description here"
-        style="padding: 20px 0px 0px 0px; max-height: 66px"
-      ></textarea>
-    </div>
+
   </div>
   <!----------------------------------------Quiz title and description --------------------------------->
 
   <!--------------------------------------Quiz date, time  and duration -------------------------------->
-  <div
-    class="quiz_time grid grid-rows-1 grid-cols-3 gap-24"
-    style="padding: 100px 50px"
-  >
+  <div class="quiz_time grid grid-rows-1 grid-cols-3 gap-24" style="padding: 100px 50px">
     <div class="col-span-3 lg:col-span-1 grid grid-rows-2 gap-2">
       <label class="row-span-1"> Date </label>
-      <input
-        class="date row-span-1"
-        id="quiz_date"
-        name="quizDate"
-        data-date-format="dd-mm-yyyy"
-        placeholder="dd-mm-yyyy"
-      />
+      <input id="quiz_date" name="date" type="date">
     </div>
 
     <div class="col-span-3 lg:col-span-1 grid grid-rows-2 grid-cols-2">
       <label class="row-span-1"> Time </label>
       <div class="row-span-1 col-span-2 grid grid-rows-1 grid-cols-2 gap-2">
         <select class="form-control col-span-1" id="time_hours">
-          <option selected>hour</option>
+          <option selected value="1">hour</option>
         </select>
 
         <select class="form-control col-span-1" id="time_minutes">
-          <option selected>minute</option>
+          <option selected value="0">minute</option>
         </select>
       </div>
     </div>
@@ -51,11 +38,11 @@
       <label class="row-span-1">Duration</label>
       <div class="row-span-1 col-span-2 grid grid-rows-1 grid-cols-2 gap-2">
         <select class="form-control col-span-1" id="duration_hours">
-          <option selected>hours</option>
+          <option selected value="0">hours</option>
         </select>
 
         <select class="form-control col-span-1" id="duration_minutes">
-          <option selected>minutes</option>
+          <option selected value="30">minutes</option>
         </select>
       </div>
     </div>
@@ -93,11 +80,51 @@
   </p>
 </footer>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"
+  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+  integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+  integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+
+
+
 <script>
-  options_cnt = 2;
-  $(".date").datepicker({
-    format: "dd-mm-yyyy",
-  });
+
+  function create_quiz() {
+    var title = document.getElementById('quiz_title').value
+    var dh = document.getElementById("duration_hours");
+    var dm = document.getElementById("duration_minutes");
+    var th = document.getElementById("time_hours");
+    var tm = document.getElementById("time_minutes");
+    var duration = parseInt(dh.value) * 60 + parseInt(dm.value)
+    var dateTime = new Date(Date.parse(document.getElementById('quiz_date').value + ' ' + th.value + ':' + tm.value + ":00"))
+
+
+    let csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;;
+    const headers = new Headers({
+      'Content-Type': 'application/json',
+      'X-CSRFToken': csrfToken
+    });
+    console.log(title)
+    let fetchRes = fetch('create_quizz/', {
+      method: 'POST',
+      headers,
+      credentials: 'include',
+      body: JSON.stringify({
+        "name": title,
+        "group": localStorage['group_id'],
+        "quiz_date": dateTime,
+        "quiz_duration": duration
+      })
+    });
+    fetchRes.then(res =>
+      res.json()).then(d => {
+        console.log(d)
+      })
+  }
+
 
   function fill_data() {
     var dh = document.getElementById("duration_hours");
@@ -108,7 +135,7 @@
     for (i = 0; i <= 23; i++) {
       var e = document.createElement("option");
       var x = document.createElement("option");
-      e.innerText = i;
+      e.innerText = i - 1;
       x.innerText = i;
       dh.appendChild(e);
       th.appendChild(x);
@@ -332,10 +359,13 @@
     q.insertBefore(new_row, q.lastElementChild);
   }
 
-  function create_quiz()
-  {
 
-  }
 </script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"
+  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+  integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+  integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
 {% endblock content %}

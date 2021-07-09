@@ -43,17 +43,18 @@
   let csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;;
   console.log(csrfToken);
 
-  const headers = new Headers({
-    'Content-Type': 'application/json',
-    'X-CSRFToken': csrfToken
-  });
-
   function gradeEssay(text)
   {
     if(text.length < 50)
       return 0 
     return Math.max( Math.floor(Math.random() * text.length)%11 , 5) ;
   }
+  
+  const headers = new Headers({
+    'Content-Type': 'application/json',
+    'X-CSRFToken': csrfToken
+  });
+
 
   function fetchAnswer(question_id, question_grade) {
     let fetchRes = fetch('answer_exam/', {
