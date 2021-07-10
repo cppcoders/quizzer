@@ -37,7 +37,7 @@
         <div class="mt-5">
           <form class="row">
             <div class="form-group col-8">
-              {% csrf_token %}
+
               <input type="text" name="group_id" id="join_group_id" class="form-control" placeholder="Group ID"
                 value="" />
             </div>
@@ -66,7 +66,10 @@
 
 <!--*********************************************** Groups ***********************************************-->
 <!---------------------------------------------------------------------------------------------------------->
+{% csrf_token %}
 
+
+<span id="account_Type" name={{ user.is_student }}></span>
 <footer class="mt-5">
   <p style="font-size: 10mm; font-weight: bold">
     Copyrights @ 2021 AAST graduation team
@@ -74,8 +77,19 @@
 </footer>
 
 <script>
-  account_Type = "Instructor";
-  if (account_Type !== "Instructor") {
+
+  nav = document.querySelectorAll('span[name="nav_page"]')
+  nav[0].classList.remove('selected')
+  nav[1].classList.add('selected')
+  
+  let account_Type = document.getElementById('account_Type')
+  account_Type = account_Type.getAttribute('name')
+  if(account_Type=="True")
+    account_Type = "Student"
+  else
+    account_Type = "Teacher"
+    
+  if (account_Type == "Student") {
     var e = document.getElementById("create_group");
     e.style.display = "none";
   }
@@ -106,6 +120,7 @@
   function joinGroup() {
 
     let csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;;
+
     console.log(csrfToken);
     id = document.getElementById('join_group_id').value
     console.log(id)
@@ -133,7 +148,6 @@
 
     let csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;;
     name = document.getElementById('create_group_name').value
-    console.log(name)
     const headers = new Headers({
       'Content-Type': 'application/json',
       'X-CSRFToken': csrfToken
@@ -149,7 +163,8 @@
     });
     fetchRes.then(res =>
       res.json()).then(d => {
-        on_clicked_group(d.id )
+        console.log(d)
+        on_clicked_group(d.id)
       })
 
   }
@@ -159,6 +174,7 @@
     fetch('list_user_groups/')
       .then(function (u) { return u.json() })
       .then(function (groups_dict) {
+        console.log(groups_dict)
         for (g of groups_dict) {
           if (g.id == group_id) {
             console.log(g.id)

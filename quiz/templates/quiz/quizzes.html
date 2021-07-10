@@ -44,6 +44,12 @@
     var e = document.getElementById("create_quiz");
     e.style.display = "none";
   }
+
+  nav = document.querySelectorAll('span[name="nav_page"]')
+  nav[0].classList.remove('selected')
+  nav[2].classList.add('selected')
+
+
   function fetch_quizzes() {
 
     fetch('list_groups_quizzes/')

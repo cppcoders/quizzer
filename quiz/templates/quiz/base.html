@@ -1,155 +1,145 @@
 {% load static %}
 <!DOCTYPE html>
 <html>
-  <head>
-    {% if title %}
-    <title>{{title}}</title>
-    {% else %}
-    <title>Quizzer</title>
-    {% endif %}
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-      integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
-      crossorigin="anonymous"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
-      integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p"
-      crossorigin="anonymous"
-    />
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-                integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-                crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
-                integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
-                crossorigin="anonymous"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
-                integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
-                crossorigin="anonymous"></script>
 
-    <style>
-      nav div a:hover {
-        text-decoration: none;
-        color: #f7d372;
-      }
+<head>
+  {% if title %}
+  <title>{{title}}</title>
+  {% else %}
+  <title>Quizzer</title>
+  {% endif %}
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap" rel="stylesheet" />
+  <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+    integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+    integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+    integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+    crossorigin="anonymous"></script>
 
-      nav {
-        background-color: #283071;
-        color: #fff;
-        font-weight: 600;
-      }
+  <style>
+    nav div a:hover {
+      text-decoration: none;
+      color: #f7d372;
+    }
 
-      nav div a span {
-        font-size: x-large;
-      }
+    nav {
+      background-color: #283071;
+      color: #fff;
+      font-weight: 600;
+    }
 
-      .selected {
-        font-weight: 800;
-        color: #f7d372;
-      }
+    nav div a span {
+      font-size: x-large;
+    }
 
-      .avatar {
-        vertical-align: middle;
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-      }
+    .selected {
+      font-weight: 800;
+      color: #f7d372;
+    }
 
-      .fa-bars {
-        color: #fff;
-        cursor: pointer;
-      }
+    .avatar {
+      vertical-align: middle;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+    }
 
-      h1 {
-        font-size: 40px;
-        display: block;
-      }
+    .fa-bars {
+      color: #fff;
+      cursor: pointer;
+    }
 
-      h2 {
-        font-size: 32px;
-      }
+    h1 {
+      font-size: 40px;
+      display: block;
+    }
 
-      h3 {
-        font-size: 22px;
-      }
+    h2 {
+      font-size: 32px;
+    }
 
-      .btn-yellow {
-        background-color: #f7d372;
-        color: #283071;
-        font-weight: bold;
-      }
+    h3 {
+      font-size: 22px;
+    }
 
-      .btn-yellow:hover {
-        background-color: orange;
-      }
+    .btn-yellow {
+      background-color: #f7d372;
+      color: #283071;
+      font-weight: bold;
+    }
 
-      footer {
-        background-color: #283071;
-        color: white;
-        text-align: center;
-        padding: 10%;
-      }
+    .btn-yellow:hover {
+      background-color: orange;
+    }
 
-      .left {
-        width: 50%;
-      }
+    footer {
+      background-color: #283071;
+      color: white;
+      text-align: center;
+      padding: 10%;
+    }
 
-      .right {
-        width: 50%;
-      }
+    .left {
+      width: 50%;
+    }
 
-      #group_not_found {
+    .right {
+      width: 50%;
+    }
+
+    #group_not_found {
+      display: none;
+    }
+
+    .card{
+      margin: 10px;
+    }
+
+    @media (max-width: 575px) {
+      #join_group_section_image {
         display: none;
       }
+    }
+  </style>
+</head>
 
-      @media (max-width: 575px) {
-        #join_group_section_image {
-          display: none;
-        }
-      }
-    </style>
-  </head>
-  <body {% block bd %}{% endblock %}  ">
+<body {% block bd %}{% endblock %} ">
     <!--********************************************  NAV BAR ************************************************-->
     <!---------------------------------------------------------------------------------------------------------->
-    <nav class="navbar navbar-dark flex justify-between">
-      <div>
-        <a href="{% url 'quiz-home' %}"
-          ><span style="font-weight: bold; font-size: 10mm">Quizzer</span></a
-        >
-      </div>
-      {%if user.is_authenticated%}
-      <div>
-        <a href="{% url 'quiz-home' %}" class="mx-3"><span class="selected">Home</span></a>
-        <a href="{% url 'quiz-groups' %}" class="mx-3"><span>Groups</span></a>
-        <a href="{% url 'quiz-quizzes' %}" class="mx-3"><span>Quizzes</span></a>
-        <a href="{% url 'quiz-about_us' %}" class="mx-3"><span>About us</span></a>
-      </div>
+    <nav class=" navbar navbar-dark flex justify-between">
+  <div>
+    <a href="{% url 'quiz-home' %}"><span style="font-weight: bold; font-size: 10mm">Quizzer</span></a>
+  </div>
+  {%if user.is_authenticated%}
+  <div>
+    <a href="{% url 'quiz-home' %}" class="mx-3"><span class="selected" name="nav_page">Home</span></a>
+    <a href="{% url 'quiz-groups' %}" class="mx-3"><span name="nav_page">Groups</span></a>
+    <a href="{% url 'quiz-quizzes' %}" class="mx-3"><span name="nav_page">Quizzes</span></a>
+    <a href="{% url 'quiz-about_us' %}" class="mx-3"><span name="nav_page">About us</span></a>
+  </div>
 
-      <div class="flex justify-end" style="padding: 10px">
-        <a href="/logout" class="mx-3"><span>Logout</span></a>
-        <i class="fas fa-bars fa-2x mt-2 mr-3"></i>
-        
-        <a href="{% url 'quiz-profile' %}"><img class="avatar" src="media/avatar2.jpg" /></a>
-      </div>
-      {%else%}
-      <a class="nav-item nav-link" href="{%url 'login'%}">Login</a>
-      <a class="nav-item nav-link" href="{%url 'register'%}">Register</a>
-      {%endif%}
-    </nav>
-    <!--********************************************  NAV BAR ************************************************-->
-    <!---------------------------------------------------------------------------------------------------------->
+  <div class="flex justify-end" style="padding: 10px">
+    <a href="/logout" class="mx-3"><span>Logout</span></a>
+    <!-- <i class="fas fa-bars fa-2x mt-2 mr-3"></i> -->
 
-    {% block content %}{% endblock %}
-  </body>
+    <a href="{% url 'quiz-profile' %}"><img class="avatar" src="media/avatar2.jpg" /></a>
+  </div>
+  {%else%}
+  <a class="nav-item nav-link" href="{%url 'login'%}">Login</a>
+  <a class="nav-item nav-link" href="{%url 'register'%}">Register</a>
+  {%endif%}
+  </nav>
+  <!--********************************************  NAV BAR ************************************************-->
+  <!---------------------------------------------------------------------------------------------------------->
+
+  {% block content %}{% endblock %}
+</body>
+
 </html>
