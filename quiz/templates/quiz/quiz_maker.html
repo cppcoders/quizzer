@@ -153,6 +153,7 @@
           question_options.push(option.value)
           i += 1
         }
+        console.log(question_options)
 
       }
       else if(question_type =='matching')
@@ -195,9 +196,12 @@
         "question_columns": question_columns,
         "question_right_answer": question_right_answer,
       }
-      // console.log(q)
       fetch_question(q);
+
     }
+    alert("Quiz Created, Find it in quizzes");
+    setTimeout(function(){  window.location.href = "/";}, 1000);
+    
   }
 
   function fetch_question(question) {
@@ -306,7 +310,7 @@
         '<div class="col-span-10 grid grid-cols-10 gap-6" id="option_1">' +
         '<div class="col-start-1"></div>' +
         '<input type="radio" name="mcq_option_input" style="min-height: 65px; ">' +
-        '<textarea class="col-span-6" name="mcq_option_value" placeholder="Option"' +
+        '<textarea name="mcq_option_value"" class="col-span-6"  placeholder="Option" ' +
         'style="padding: 20px 0px 0px 10px ; max-height: 55px;"></textarea>' +
         '<div class="col-span-1 flex flex-col justify-center">' +
         '<i class="fas fa-times fa-2x delete_icon"' +
@@ -457,15 +461,14 @@
     new_option.classList.add("col-span-10", "grid", "grid-cols-10", "gap-6");
     new_option.innerHTML =
       '<div class="col-start-1"></div> ' +
-      '<input type="radio" style="min-height: 65px; "> ' +
-      '<textarea class="col-span-6" placeholder="Option" name = "mcq_option_value' +
+      '<input type="radio" name="mcq_option_input" style="min-height: 65px; "> ' +
+      '<textarea class="col-span-6" placeholder="Option" name = "mcq_option_value"' +
       '        style="padding: 20px 0px 0px 10px ; max-height: 55px;"></textarea> ' +
       '<div class="col-span-1 flex flex-col justify-center"> ' +
       '        <i class="fas fa-times fa-2x delete_icon" id="option_1" onclick="delete_option(this)"></i> ' +
       "</div>" +
       "</div>";
     q.insertBefore(new_option, q.lastElementChild);
-    options_cnt++;
   }
 
   function delete_option(op) {
