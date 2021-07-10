@@ -6,6 +6,8 @@
   <div class="header flex justify-end flex-col" style="height: 700px; padding: 30px">
     <p class="group_title" id="title" style="color: #fff;font-size: 100px;">Algorithms</p>
     <p class="group_members_count" id="members_count" style="color: #fff;font-size: 70px;">3 members</p>
+    <p class="group_id" id="group_id" style="color: #fff;font-size: 70px;">Group Id: </p>
+    
   </div>
 </header>
 
@@ -16,7 +18,7 @@
 <!---------------------------------------------------------------------------------------------------------->
 <div class="container mt-16" id="admin_options">
   <div class="row justify-evenly" style="padding: 50px">
-    <button class="btn btn-yellow col-12 col-md-4 m-2" onclick="create_quiz()">
+    <button class="btn btn-yellow col-12 col-md-4 m-2" id="create_quiz_button" onclick="create_quiz()">
       Create Quiz
     </button>
     <button class="btn btn-danger col-12 col-md-4 m-2">Leave Group</button>
@@ -62,7 +64,7 @@
 
 <!--********************************************  Quizzes ************************************************-->
 <!---------------------------------------------------------------------------------------------------------->
-
+<span id="account_Type" name={{ user.is_student }}></span>
 <footer class="mt-5">
   <p style="font-size: 10mm; font-weight: bold">
     Copyrights @ 2021 AAST graduation team
@@ -70,20 +72,45 @@
 </footer>
 
 <script>
-  account_type = "Admin";
+  document.getElementById('group_id').innerText = 'Group Id: ' + localStorage['group_id']
+  document.getElementById('title').innerText =  localStorage['group_name']
+
+  nav = document.querySelectorAll('span[name="nav_page"]')
+  nav[0].classList.remove('selected')
+  nav[1].classList.add('selected')
+
+  let account_Type = document.getElementById('account_Type')
+  account_Type = account_Type.getAttribute('name')
+  if(account_Type=="True")
+    account_Type = "Student"
+  else
+    account_Type = "Teacher"
+  
+  if(account_Type =="Student")
+  {
+    var e = document.getElementById('create_quiz_button')
+    e.style.display = "none"
+  }
+
+  
   function fetch_members() {
     fetch('get_group_quizzes/' + localStorage['group_id'])
       .then(function (u) { return u.json() })
       .then(function (data) {
-
-        document.getElementById('title').innerText = data[0].quiz_group
+          document.getElementById('title').innerText = data[0].quiz_group
       })
     fetch('get_group_members/' + localStorage['group_id'])
       .then(function (u) { return u.json(); })
       .then(function (members_dict) {
         document.getElementById('members_count').innerText = members_dict.length + ' Members'
 
-
+        function remove(m)
+        {
+          if(account_Type =="Teacher")
+            return '<button class="btn btn-danger m-1" onClick="remove_member(' + m.memeber_id + ')">Remove Member</button></div>' 
+          else
+            return ""
+        }
         var tbody = document.getElementById("tbody");
         for (m of members_dict) {
           var tr = document.createElement("tr");
@@ -98,7 +125,7 @@
             m.memeber_email +
             "</td>" +
             "<td>" +
-            '<button class="btn btn-danger m-1" onClick="remove_member(' + m.memeber_id + ')">Remove Member</button></div>' +
+            remove(m) +
             "</td>";
           tbody.appendChild(tr);
         }
@@ -112,14 +139,14 @@
   function remove_member(member_id) {
     fetch('remove_group_user/' + member_id + '/' + localStorage['group_id'])
     setTimeout(function () {
-      location.reload()
+      window.location.href = "/";
     }, 2000);
 
   }
 
   function fetch_quizzes() {
 
-    fetch('get_group_quizzes/2')
+    fetch('get_group_quizzes/' + localStorage['group_id'])
       .then(function (u) { return u.json() })
       .then(function (quizzes_dict) {
 

@@ -23,7 +23,7 @@
 {% csrf_token %}
 <div class="container mt-24" id="container">
   <div class="grid grid-cols-10 mt-40">
-    <button class="btn btn-yellow col-span-10">Submit</button>
+    <button class="btn btn-yellow col-span-10" onclick="submit_answers()">Submit</button>
   </div>
 </div>
 <!--********************************************  Quiz Container *****************************************-->
@@ -37,35 +37,52 @@
 
 <script>
 
+nav = document.querySelectorAll('span[name="nav_page"]')
+  nav[0].classList.remove('selected')
+  nav[2].classList.add('selected')
 
-
-let csrfToken =  document.querySelector('[name=csrfmiddlewaretoken]').value;;
+  let csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;;
   console.log(csrfToken);
 
-  const headers = new Headers({
-            'Content-Type': 'application/json',
-            'X-CSRFToken': csrfToken
-        }); 
+  function gradeEssay(text) {
+    if (text.length < 50)
+      return 0
+    return Math.max(Math.floor(Math.random() * text.length) % 11, 5);
+  }
 
-  let fetchRes = fetch('join_group/', {
+  const headers = new Headers({
+    'Content-Type': 'application/json',
+    'X-CSRFToken': csrfToken
+  });
+
+
+  function fetchAnswer(question_id, question_grade) {
+    let fetchRes = fetch('answer_exam/', {
       method: 'POST',
       headers,
       credentials: 'include',
-      body: JSON.stringify({
-        "exam": String(localStorage['quiz_id']),
-        "question": '7',
-        "grade": '7'
-      })
+      body: JSON.stringify(
+        [
+          {
+            "exam": String(localStorage['quiz_id']),
+            "question": question_id,
+            "grade": question_grade
+          }
+        ]
+      )
     });
     fetchRes.then(res =>
-            res.json()).then(d => {
-                console.log(d)
-            })
-    
+      res.json()).then(d => {
+        console.log(d)
+      })
+  }
+
+
+
   fetch('get_quiz/' + localStorage['quiz_id'])
     .then(function (u) { return u.json() })
     .then(function (data) {
-      var countDownDate = new Date(Date.parse(data.quiz_date) ).getTime();
+      var countDownDate = new Date(Date.parse(data.quiz_date)).getTime();
       var x = setInterval(function () {
         var now = new Date().getTime();
         var distance = countDownDate - now;
@@ -86,39 +103,7 @@ let csrfToken =  document.querySelector('[name=csrfmiddlewaretoken]').value;;
 
     })
 
-  var quiz = [
-    {
-      question_type: "MCQ",
-      question_head: "How many?",
-      question_options: ["1", "2", "3", "4"],
-      question_right_answer: "1",
-    },
 
-    {
-      question_type: "True or False",
-      question_head: "Is it?",
-      question_right_answer: "True",
-    },
-
-    {
-      question_type: "Matching",
-      question_head: "Match the following",
-      question_rows: ["Row 1", "Row 2", "Row 3", "Row 4"],
-      question_cols: ["Column 1", "Column 2", "Column 3", "Column 4"],
-      question_right_answers: {
-        row_1: "col_4",
-        row_2: "col-3",
-        row_3: "col-2",
-        row_4: "col-1",
-      },
-    },
-
-    {
-      question_type: "Essay",
-      question_head: "Describe",
-      question_right_answer: "Bla Bla Bla",
-    },
-  ];
 
   function mcq(question) {
     var p = document.getElementById("container");
@@ -126,12 +111,17 @@ let csrfToken =  document.querySelector('[name=csrfmiddlewaretoken]').value;;
     d.classList.add("mt-12");
     var options = "";
     var question_head = question["question_head"];
+    question["question_options"] = question["question_options"].split(',')
+    if (!isIterable(q['question_options'])) {
+            q.question_options = [q.question_options]
+          }
+        
     for (op of question["question_options"]) {
       options =
         options +
-        '<div class="col-start-1"></div>' +
+        '<div class="col-start-1" name="right_wrong"></div>' +
         '<input class="col-span-1" type="radio" name="mcq_option">' +
-        '<p class="col-span-8" style="font-size: 22px;overflow-wrap: break-word;background-color: #f8f9fa;padding:10px 20px">' +
+        '<p class="col-span-8" name ="mcq_value" style="font-size: 22px;overflow-wrap: break-word;background-color: #f8f9fa;padding:10px 20px">' +
         op +
         "</p>";
     }
@@ -143,7 +133,7 @@ let csrfToken =  document.querySelector('[name=csrfmiddlewaretoken]').value;;
       '<p class="col-span-9" style="font-size: 32px; font-weight: bold;overflow-wrap: break-word;">' +
       question_head +
       "</p>" +
-      '<div class="col-span-10 grid grid-cols-10 gap-6 mt-12">' +
+      '<div class="col-span-10 grid grid-cols-10 gap-6 mt-12" name="mcq" id="' + question.question_id + '" >' +
       options +
       "</div>" +
       "</div>" +
@@ -153,12 +143,15 @@ let csrfToken =  document.querySelector('[name=csrfmiddlewaretoken]').value;;
 
   function cols_inputs(cnt, question) {
     var res = "";
-    for (let i = 0; i < question["question_cols"].length; i++) {
-      res = res + '<input type="radio" name="row' + cnt + '">';
+    for (let i = 0; i < question["question_columns"].length; i++) {
+      res = res + '<input type="radio" name="row_input' + cnt + '">';
     }
     return res;
   }
   function matching(question) {
+    question.question_rows = question.question_rows.split(',')
+    question.question_columns = question.question_columns.split(',')
+
     var p = document.getElementById("container");
     var d = document.createElement("div");
     d.classList.add("mt-12");
@@ -171,18 +164,19 @@ let csrfToken =  document.querySelector('[name=csrfmiddlewaretoken]').value;;
       var inputs = cols_inputs(cnt, question);
       rows =
         rows +
-        '<div class="col-span-10 grid grid-cols-10 mt-3" style="background-color: #f8f9fa; padding: 20px;">' +
-        '<div class="col-start-1"></div>' +
+        '<div class="col-span-10 grid grid-cols-10 mt-3" name ="row" style="background-color: #f8f9fa; padding: 20px;">' +
+        '<div class="col-start-1" name="right_wrong"></div>' +
         '<p class="col-span-3" style="overflow-wrap: break-word;">' +
         r +
         "</p>" +
-        '<div class="col-span-6 flex justify-evenly">' +
+        '<div class="col-span-6 flex justify-evenly" name="row_inputs">' +
         inputs +
         "</div>" +
         "</div>";
       cnt++;
     }
-    for (c of question["question_cols"]) {
+
+    for (c of question["question_columns"]) {
       cols = cols + "<span>" + c + "</span>";
     }
 
@@ -193,9 +187,9 @@ let csrfToken =  document.querySelector('[name=csrfmiddlewaretoken]').value;;
       '<p class="col-span-9" style="font-size: 32px; font-weight: bold;overflow-wrap: break-word;">' +
       question_head +
       "</p>" +
-      '<div class="col-span-10 grid grid-cols-10 mt-12" >' +
+      '<div class="col-span-10 grid grid-cols-10 mt-12" id="' + question.question_id + '" name = "matching">' +
       '<div class="col-start-4"></div>' +
-      '<div class="col-span-6 flex justify-evenly">' +
+      '<div class="col-span-6 flex justify-evenly  ">' +
       cols +
       "</div>" +
       rows +
@@ -216,8 +210,8 @@ let csrfToken =  document.querySelector('[name=csrfmiddlewaretoken]').value;;
       '<p class="col-span-9" style="font-size: 32px; font-weight: bold;overflow-wrap: break-word;">' +
       question_head +
       "</p>" +
-      '<div class="col-span-10 grid grid-cols-10 mt-12">' +
-      '         <div class="col-start-1"></div>' +
+      '<div class="col-span-10 grid grid-cols-10 mt-12" id="' + question.question_id + '" name="torf">' +
+      '         <div class="col-start-1" name ="right_wrong"></div>' +
       '<input class="col-span-1" type="radio" name="tf">' +
       '<p class="col-span-3" style="font-size: 22px;">True</p>' +
       '<input class="col-span-1" type="radio" name="tf">' +
@@ -227,6 +221,8 @@ let csrfToken =  document.querySelector('[name=csrfmiddlewaretoken]').value;;
       "</div>";
     p.insertBefore(d, p.lastElementChild);
   }
+
+
 
   function essay(question) {
     var p = document.getElementById("container");
@@ -240,13 +236,21 @@ let csrfToken =  document.querySelector('[name=csrfmiddlewaretoken]').value;;
       '<p class="col-span-9" style="font-size: 32px; font-weight: bold;overflow-wrap: break-word;">' +
       question_head +
       "</p>" +
-      '<div class="col-span-10 grid grid-cols-10 mt-12">' +
+      '<div class="col-span-10 grid grid-cols-10 mt-12" id="' + question.question_id + '" name="essay">' +
       '         <div class="col-start-1"></div>' +
-      '<textarea class="col-span-8" style="padding: 15px 0px 0px 10px;background-color: #f8f9fa;min-height: 200px;" placeholder="Your Answer"></textarea>' +
+      '<textarea class="col-span-8" style="padding: 15px 0px 0px 10px;background-color: #f8f9fa;min-height: 200px;" placeholder="Your Answer" id="essay_text" ></textarea>' +
       "</div>" +
       "</div>" +
       "</div>";
     p.insertBefore(d, p.lastElementChild);
+  }
+
+  function isIterable(obj) {
+    // checks for null and undefined
+    if (obj == null) {
+      return false;
+    }
+    return typeof obj[Symbol.iterator] === 'function';
   }
 
   function fill_data() {
@@ -273,13 +277,168 @@ let csrfToken =  document.querySelector('[name=csrfmiddlewaretoken]').value;;
         e = document.getElementById("duration");
         e.innerText = data.quiz_duration + ' Minutes'
       });
-    for (q of quiz) {
-      if (q["question_type"] == "MCQ") mcq(q);
-      else if (q["question_type"] == "Matching") matching(q);
-      else if (q["question_type"] == "True or False") TorF(q);
-      else essay(q);
-    }
+
+    fetch('get_quiz_questions/' + localStorage['quiz_id'])
+      .then(function (u) { return u.json() })
+      .then(function (data) {
+        console.log(data)
+        for (q of data) {
+
+
+          if (q.question_type == "mcq") mcq(q);
+          else if (q.question_type == "matching") matching(q);
+          else if (q["question_type"] == "torf") TorF(q);
+          else essay(q);
+        }
+      })
+
+
   }
+
+
+  function submit_answers() {
+    var inputs = document.getElementsByTagName("input");
+    for (var i = 0; i < inputs.length; i++) {
+      inputs[i].disabled = true;
+    }
+    var textareas = document.getElementsByTagName("textarea");
+    for (var i = 0; i < textareas.length; i++) {
+      textareas[i].disabled = true;
+    }
+
+    fetch('get_quiz_questions/' + localStorage['quiz_id'])
+      .then(function (u) { return u.json() })
+      .then(function (data) {
+        let i = 0;
+        ids = []
+        for (question of data) {
+          id = question.question_id
+
+          let e = ''
+          e = document.getElementById(id)
+          let p = document.createElement('p')
+          p.setAttribute('style', 'font-size:25px;text-align:center')
+
+          if (e.getAttribute('name') == 'mcq') {
+            let options = e.querySelectorAll('input[name="mcq_option"]');
+            let values = e.querySelectorAll('p[name="mcq_value"]')
+            let right_wrong = e.querySelectorAll('div[name="right_wrong"]')
+
+            let = j = 0;
+            question_score = 0
+            for (option of options) {
+              if (option.checked) {
+                if (values[j].innerText == question.question_right_answer) {
+                  question_score = 10
+                  right_wrong[j].setAttribute('style', 'background-color:#19d513');
+                }
+                else {
+                  question_score = 0
+                  right_wrong[j].setAttribute('style', 'background-color:red');
+
+                }
+              }
+              j += 1
+            }
+
+            p.innerText = question_score.toString() + ' / 10'
+            e.appendChild(p)
+            fetchAnswer(question.question_id, question_score)
+          }
+          else if (e.getAttribute('name') == 'matching') {
+
+
+            let right_answers = question.question_right_answer.split(',')
+            let right_wrong = e.querySelectorAll('div[name="right_wrong"]')
+
+            let rows = e.querySelectorAll('div[name="row"]');
+            rows_cnt = 0;
+            question_score = 0
+            for (row of rows) {
+              let inputs = row.querySelector('div[name="row_inputs"')
+              inputs = inputs.querySelectorAll('input[name="row_input' + rows_cnt + '"]')
+              cols_cnt = 0
+              for (input of inputs) {
+                if (input.checked) {
+                  if (cols_cnt == right_answers[rows_cnt]) {
+                    question_score += 2.5
+                    right_wrong[rows_cnt].setAttribute('style', 'background-color:#19d513');
+
+                  }
+                  else {
+                    right_wrong[rows_cnt].setAttribute('style', 'background-color:red');
+                  }
+                }
+                cols_cnt += 1
+              }
+              rows_cnt += 1
+            }
+            p.innerText = question_score.toString() + '/ 10'
+            e.appendChild(p)
+            fetchAnswer(question.question_id, question_score)
+          }
+          else if (e.getAttribute('name') == 'torf') {
+
+            let right_wrong = e.querySelector('div[name="right_wrong"]')
+            let answers = e.querySelectorAll('input[name="tf"]')
+            let TorF = 0;
+            let question_score = 0;
+            for (answer of answers) {
+              if (answer.checked) {
+                console.log(question.right_answers)
+                if (question.question_right_answer == "True" && TorF == 0) {
+                  question_score = 10;
+                  right_wrong.setAttribute('style', 'background-color:#19d513');
+                }
+                else {
+                  question_score = 0
+                  right_wrong.setAttribute('style', 'background-color:red');
+                }
+              }
+              TorF += 1
+            }
+            p.innerText = question_score.toString() + '/ 10'
+            e.appendChild(document.createElement('br'))
+            e.appendChild(p)
+            fetchAnswer(question.question_id, question_score)
+          }
+          else {
+            let right_wrong = e.querySelector('div[name="right_wrong"]')
+            let answer = document.getElementById('essay_text')
+            let question_score = gradeEssay(answer.value);
+            p.innerText = question_score.toString() + '/ 10'
+            e.appendChild(document.createElement('br'))
+            e.appendChild(p)
+            fetchAnswer(question.question_id, question_score)
+          }
+
+        }
+      })
+  }
+
+  function gradeEsssay(question_answer) {
+    let fetchRes = fetch('grade_essay/', {
+      method: 'POST',
+      headers,
+      credentials: 'include',
+      body: JSON.stringify(
+        [
+          {
+            "exam": String(localStorage['quiz_id']),
+            "question": question_id,
+            "answer": question_answer
+          }
+        ]
+      )
+    });
+    fetchRes.then(res =>
+      res.json()).then(d => {
+        return d.grade;
+      })
+
+  }
+
+
 </script>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"

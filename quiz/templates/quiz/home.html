@@ -15,11 +15,12 @@
         <div class="mt-5">
           <form class="row">
             <div class="form-group col-8">
-              <input type="text" name="group_id" class="form-control" placeholder="Group ID" value="" />
+              <input type="text" name="group_id" id="join_group_id" class="form-control" placeholder="Group ID"
+                value="" />
             </div>
             {% csrf_token %}
             <div class="form-group">
-              <button type="button" id="join_group_id" onclick="joinGroup()" class="btn btn-yellow">
+              <button type="button" onclick="joinGroup()" class="btn btn-yellow">
                 Join
               </button>
             </div>
@@ -81,7 +82,7 @@
       .then(function (groups_dict) {
 
         var cont = document.getElementById("groups_container");
-
+        console.log(groups_dict)
         for (g of groups_dict) {
           var c = document.createElement("div");
           c.classList.add("card", "col-lg-3", "col-md-3", "col-sm-5", "m-4");
@@ -92,8 +93,7 @@
             '<div class="card-body">' +
             '<h3 class="card-title">' +
             g.group_name +
-            '</h3><button onClick = "on_clicked_group(' + g.id + ')"' +
-            'view_group' +
+            '</h3><button onClick = "on_clicked_group(' + g.id + ')' + '" ' +
             ' class="btn btn-yellow">View Group</button></div>';
           cont.appendChild(c);
         }
@@ -102,9 +102,18 @@
   }
 
   function on_clicked_group(group_id) {
-
-    localStorage['group_id'] = group_id
-    window.location.href = "/view_group";
+    fetch('list_user_groups/')
+      .then(function (u) { return u.json() })
+      .then(function (groups_dict) {
+        for (g of groups_dict) {
+          if (g.id == group_id) {
+            console.log(g.id)
+            localStorage['group_id'] = g.id
+            localStorage['group_name'] = g.group_name
+            window.location.href = "/view_group";
+          }
+        }
+      })
 
   }
 
@@ -124,22 +133,27 @@
   }
 
   function joinGroup() {
-    
-    // let fetchRes = fetch('join_group/', {
-    //   method: 'POST',
-    //   headers,
-    //   credentials: 'include',
-    //   body: JSON.stringify({
-    //     group_id: id
-    //   })
-    // });
-    // fetchRes.then(res =>
-    //         res.json()).then(d => {
-    //             console.log(d)
-    //         })
 
+    let csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;;
+    console.log(csrfToken);
+    id = document.getElementById('join_group_id').value
+    const headers = new Headers({
+      'Content-Type': 'application/json',
+      'X-CSRFToken': csrfToken
+    });
 
-  
+    let fetchRes = fetch('join_group/', {
+      method: 'POST',
+      headers,
+      credentials: 'include',
+      body: JSON.stringify({
+        "group_id": id,
+      })
+    });
+    fetchRes.then(res =>
+      res.json()).then(d => {
+        location.reload()
+      })
   }
 
   function fetch_quizzes() {
@@ -195,10 +209,4 @@
   }
 </script>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"
-  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
-  integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
-  integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
 {% endblock content %}

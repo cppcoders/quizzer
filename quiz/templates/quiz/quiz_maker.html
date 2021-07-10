@@ -3,46 +3,33 @@
 <!--********************************************  Create quiz **********************************************-->
 <!---------------------------------------------------------------------------------------------------------->
 <div class="container" id="container">
+  {% csrf_token %}
   <!----------------------------------------Quiz title and description --------------------------------->
   <div class="quiz-discription shadow p-5 mt-5 grid grid-rows-2">
     <div style="font-size: 32px" class="row-span-1 grid grid-cols-3">
-      <input placeholder="Quiz title here" class="col-span-2" />
+      <input placeholder="Quiz title here" class="col-span-2" id="quiz_title" />
     </div>
 
-    <div style="font-size: 22px" class="row-span-1 grid grid-cols-1">
-      <textarea
-        placeholder="Quiz description here"
-        style="padding: 20px 0px 0px 0px; max-height: 66px"
-      ></textarea>
-    </div>
+
   </div>
   <!----------------------------------------Quiz title and description --------------------------------->
 
   <!--------------------------------------Quiz date, time  and duration -------------------------------->
-  <div
-    class="quiz_time grid grid-rows-1 grid-cols-3 gap-24"
-    style="padding: 100px 50px"
-  >
+  <div class="quiz_time grid grid-rows-1 grid-cols-3 gap-24" style="padding: 100px 50px">
     <div class="col-span-3 lg:col-span-1 grid grid-rows-2 gap-2">
       <label class="row-span-1"> Date </label>
-      <input
-        class="date row-span-1"
-        id="quiz_date"
-        name="quizDate"
-        data-date-format="dd-mm-yyyy"
-        placeholder="dd-mm-yyyy"
-      />
+      <input id="quiz_date" name="date" type="date">
     </div>
 
     <div class="col-span-3 lg:col-span-1 grid grid-rows-2 grid-cols-2">
       <label class="row-span-1"> Time </label>
       <div class="row-span-1 col-span-2 grid grid-rows-1 grid-cols-2 gap-2">
         <select class="form-control col-span-1" id="time_hours">
-          <option selected>hour</option>
+          <option selected value="1">hour</option>
         </select>
 
         <select class="form-control col-span-1" id="time_minutes">
-          <option selected>minute</option>
+          <option selected value="0">minute</option>
         </select>
       </div>
     </div>
@@ -51,11 +38,11 @@
       <label class="row-span-1">Duration</label>
       <div class="row-span-1 col-span-2 grid grid-rows-1 grid-cols-2 gap-2">
         <select class="form-control col-span-1" id="duration_hours">
-          <option selected>hours</option>
+          <option selected value="0">hours</option>
         </select>
 
         <select class="form-control col-span-1" id="duration_minutes">
-          <option selected>minutes</option>
+          <option selected value="30">minutes</option>
         </select>
       </div>
     </div>
@@ -93,11 +80,188 @@
   </p>
 </footer>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"
+  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+  integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+  integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+
+
+
 <script>
-  options_cnt = 2;
-  $(".date").datepicker({
-    format: "dd-mm-yyyy",
-  });
+
+  function create_quiz() {
+    var title = document.getElementById('quiz_title').value
+    var dh = document.getElementById("duration_hours");
+    var dm = document.getElementById("duration_minutes");
+    var th = document.getElementById("time_hours");
+    var tm = document.getElementById("time_minutes");
+    var duration = parseInt(dh.value) * 60 + parseInt(dm.value)
+    var dateTime = new Date(Date.parse(document.getElementById('quiz_date').value + ' ' + th.value + ':' + tm.value + ":00"))
+
+    let csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;;
+    const headers = new Headers({
+      'Content-Type': 'application/json',
+      'X-CSRFToken': csrfToken
+    });
+    console.log(title)
+    let fetchRes = fetch('create_quizz/', {
+      method: 'POST',
+      headers,
+      credentials: 'include',
+      body: JSON.stringify({
+        "name": title,
+        "group": localStorage['group_id'],
+        "quiz_date": dateTime,
+        "quiz_duration": duration
+      })
+    });
+    fetchRes.then(res =>
+      res.json()).then(d => {
+        console.log(d)
+        create_questions(d)
+      })
+
+    
+
+  }
+
+  function create_questions(d) {
+    var questions = document.querySelectorAll('div[class="question shadow  justify-center"]')
+    let question_head = ''
+    let question_type = ''
+    let question_options = []
+    let question_rows = []
+    let question_columns = []
+    let question_right_answer = ''
+
+
+    for (question of questions) {
+      let q = ''
+      question_type = question.getAttribute('name')
+      question_head = question.querySelector('textarea[name="question_head"]').value
+      if (question_type == 'mcq') {
+        html_question_options = question.querySelectorAll('textarea[name="mcq_option_value"]')
+        html_question_inputs = question.querySelectorAll('input[name="mcq_option_input"]')
+        let i = 0;
+        for (option of html_question_options) {
+          if (html_question_inputs[i].checked) {
+            question_right_answer = option.value
+          }
+          question_options.push(option.value)
+          i += 1
+        }
+        console.log(question_options)
+
+      }
+      else if(question_type =='matching')
+      {
+        html_rows = question.querySelectorAll('textarea[name="matching_rows"]')
+        html_cols = question.querySelectorAll('textarea[name="matching_cols"]')
+        for(row of html_rows)
+        {
+          question_rows.push(row.value)
+        }
+        for(col of html_cols)
+        {
+          question_columns.push(col.value)
+        }
+        question_rows = question_rows.toString()
+        question_columns = question_columns.toString()
+        
+        question_right_answer = question.querySelector('textarea[name="mathcing_right_answers"]').value
+        question_right_answer = question_right_answer.split(' ').toString()
+      }
+      else if(question_type =="torf")
+      {
+        inputs = question.querySelectorAll('input[name="torf_input"]')
+        if(inputs[0].checked)
+        {
+          question_right_answer = "True"
+        }
+        else
+          question_right_answer = "False"
+
+      }
+
+
+      q = {
+        "exam": d.id,
+        "question_head": question_head,
+        "question_type": question_type,
+        "question_options": question_options.toString(),
+        "question_rows": question_rows,
+        "question_columns": question_columns,
+        "question_right_answer": question_right_answer,
+      }
+      fetch_question(q);
+
+    }
+    alert("Quiz Created, Find it in quizzes");
+    setTimeout(function(){  window.location.href = "/";}, 1000);
+    
+  }
+
+  function fetch_question(question) {
+
+    
+
+    let csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;;
+    const headers = new Headers({
+      'Content-Type': 'application/json',
+      'X-CSRFToken': csrfToken
+    });
+    var body = ''
+    if (question.question_type == 'mcq') {
+      body = JSON.stringify({
+          "exam": question.exam,
+          "question_head": question.question_head,
+          "question_type": question.question_type,
+          "question_options": question.question_options,
+          "question_right_answer": question.question_right_answer,
+        })     
+    }
+    else if (question.question_type == 'matching') {
+      body = JSON.stringify({
+          "exam": question.exam,
+          "question_head": question.question_head,
+          "question_type": question.question_type,
+          "question_rows": question.question_rows,
+          "question_columns": question.question_columns,
+          "question_right_answer": question.question_right_answer,
+        })     
+    }
+    else if (question.question_type == 'torf') {
+      body = JSON.stringify({
+          "exam": question.exam,
+          "question_head": question.question_head,
+          "question_type": question.question_type,
+          "question_right_answer": question.question_right_answer,
+        })     
+    }
+    else if (question.question_type == 'essay') {
+      body = JSON.stringify({
+          "exam": question.exam,
+          "question_head": question.question_head,
+          "question_type": question.question_type,
+        })     
+    }
+    
+      let fetchRes = fetch('create_question/', {
+        method: 'POST',
+        headers,
+        credentials: 'include',
+        body: body
+      });
+    fetchRes.then(res =>
+      res.json()).then(d => {
+        console.log(d)
+      })
+
+  }
+
 
   function fill_data() {
     var dh = document.getElementById("duration_hours");
@@ -105,10 +269,10 @@
     var th = document.getElementById("time_hours");
     var tm = document.getElementById("time_minutes");
 
-    for (i = 0; i <= 23; i++) {
+    for (i = 1; i <= 24; i++) {
       var e = document.createElement("option");
       var x = document.createElement("option");
-      e.innerText = i;
+      e.innerText = i - 1;
       x.innerText = i;
       dh.appendChild(e);
       th.appendChild(x);
@@ -124,6 +288,8 @@
     }
   }
 
+
+
   function add_question() {
     var container = document.getElementById("container");
     var select = document.getElementById("types");
@@ -132,7 +298,7 @@
     if (select.value == "MCQ") {
       p.innerHTML =
         "<!--------------------------------------Questions conrainer  -------------------------------->" +
-        '<div class="question shadow  justify-center ">' +
+        '<div class="question shadow  justify-center" name="mcq">' +
         "<!------------------------------ Question head -------------------------------------->" +
         '<div class="grid grid-cols-10 gap-6 " style="padding: 50px;">' +
         '<div class="col-start-1"></div>' +
@@ -143,8 +309,8 @@
         '<div class="grid grid-cols-10 gap-6" style="padding: 10px 0px 50px 0px;" id="q1">' +
         '<div class="col-span-10 grid grid-cols-10 gap-6" id="option_1">' +
         '<div class="col-start-1"></div>' +
-        '<input type="radio" style="min-height: 65px; ">' +
-        '<textarea class="col-span-6" placeholder="Option"' +
+        '<input type="radio" name="mcq_option_input" style="min-height: 65px; ">' +
+        '<textarea name="mcq_option_value"" class="col-span-6"  placeholder="Option" ' +
         'style="padding: 20px 0px 0px 10px ; max-height: 55px;"></textarea>' +
         '<div class="col-span-1 flex flex-col justify-center">' +
         '<i class="fas fa-times fa-2x delete_icon"' +
@@ -159,10 +325,9 @@
         '<i class="fas fa-trash-alt" style="color: #fff;"></i> Delete</button></div>' +
         "<!--------------------------------------Questions conrainer  -------------------------------->";
     } else if (select.value == "Matching") {
-      console.log(1);
       p.innerHTML =
         "<!--------------------------------------Question conrainer  -------------------------------->" +
-        '<div class="question shadow  justify-center ">' +
+        '<div class="question shadow  justify-center" name="matching">' +
         "<!------------------------------ Question head -------------------------------------->" +
         '<div class="grid grid-cols-10 gap-6 " style="padding: 50px;">' +
         '<div class="col-start-1"></div>' +
@@ -170,11 +335,16 @@
         'style="padding: 15px 0px 0px 10px ; background-color: #f8f9fa; max-height: 60px;"></textarea></div>' +
         "<!------------------------------ Question head -------------------------------------->" +
         "<!------------------------------ Question body -------------------------------------->" +
-        '<div class="grid grid-cols-12" style="padding-bottom: 50px;">' +
+        '<div class="grid grid-cols-12" style="padding-bottom: 50px;">' + 
+        '<div class="col-start-1"></div>' +
+        '<div class="col-span-10" style="padding-bottom: 50px;">'+
+        '<textarea name="mathcing_right_answers" style="width:100%" placeholder="Right Answers"></textarea>'+
+        '</div>'+
+        '<div class="col-end-1"></div>' +
         '<div class="col-start-1"></div>' +
         '<div class="col-span-5 grid grid-cols-5" id="rows">' +
         '<div class="col-span-5 grid grid-cols-5 gap-6">' +
-        '<textarea class="col-span-4" placeholder="Row"' +
+        '<textarea class="col-span-4" name="matching_rows" placeholder="Row"' +
         'style="padding: 20px 0px 0px 10px ; max-height: 55px;"></textarea>' +
         '<div class="col-span-1 flex flex-col justify-center">' +
         '<i class="fas fa-times fa-2x delete_icon"' +
@@ -189,7 +359,7 @@
         "</div>" +
         '<div class="col-span-5 grid grid-cols-5" id="columns">' +
         '<div class="col-span-5 grid grid-cols-5 gap-6">' +
-        '<textarea class="col-span-4" placeholder="Column"' +
+        '<textarea class="col-span-4"name="matching_cols" placeholder="Column"' +
         'style="padding: 20px 0px 0px 10px ; max-height: 55px;"></textarea>' +
         '<div class="col-span-1 flex flex-col justify-center">' +
         '<i class="fas fa-times fa-2x delete_icon"' +
@@ -216,7 +386,7 @@
         "</div>";
     } else if (select.value == "True or False") {
       p.innerHTML =
-        '<div class="question shadow  justify-center ">' +
+        '<div class="question shadow  justify-center" name="torf">' +
         "<!---------------------------Quiz head-------------------------------------->" +
         '<div class="grid grid-cols-10 gap-6 " style="padding: 50px;">' +
         '<div class="col-start-1"></div>' +
@@ -232,11 +402,11 @@
         '                <formc class="form-group grid grid-cols-7" style="font-size: 22px;">' +
         '                <div class="col-start-1"></div>' +
         '        <div class="col-span-3">' +
-        '                <input type="radio" name="TorF">' +
+        '                <input type="radio" name="torf_input">' +
         "        <label>True</label>" +
         "</div>" +
         '<div class="col-span-3">' +
-        '        <input type="radio" name="TorF">' +
+        '        <input type="radio" name="torf_input">' +
         "<label>False</label>" +
         "</div>" +
         "</form>" +
@@ -252,7 +422,7 @@
         "</div>";
     } else if (select.value == "Essay") {
       p.innerHTML =
-        '<div class="question shadow  justify-center" >' +
+        '<div class="question shadow  justify-center" name="essay">' +
         "<!---------------------------Quiz head-------------------------------------->" +
         '<div class="grid grid-cols-10 gap-6 " style="padding: 50px;">' +
         '        <div class="col-start-1"></div>' +
@@ -291,15 +461,14 @@
     new_option.classList.add("col-span-10", "grid", "grid-cols-10", "gap-6");
     new_option.innerHTML =
       '<div class="col-start-1"></div> ' +
-      '<input type="radio" style="min-height: 65px; "> ' +
-      '<textarea class="col-span-6" placeholder="Option" ' +
+      '<input type="radio" name="mcq_option_input" style="min-height: 65px; "> ' +
+      '<textarea class="col-span-6" placeholder="Option" name = "mcq_option_value"' +
       '        style="padding: 20px 0px 0px 10px ; max-height: 55px;"></textarea> ' +
       '<div class="col-span-1 flex flex-col justify-center"> ' +
       '        <i class="fas fa-times fa-2x delete_icon" id="option_1" onclick="delete_option(this)"></i> ' +
       "</div>" +
       "</div>";
     q.insertBefore(new_option, q.lastElementChild);
-    options_cnt++;
   }
 
   function delete_option(op) {
@@ -312,7 +481,7 @@
     var new_row = document.createElement("div");
     new_row.classList.add("col-span-5", "grid", "grid-cols-5", "gap-6");
     new_row.innerHTML =
-      '<textarea class="col-span-4" placeholder="Row"' +
+      '<textarea class="col-span-4" placeholder="Row" name ="matching_rows" ' +
       'style = "padding: 20px 0px 0px 10px ; max-height: 55px;" ></textarea >' +
       '<div class="col-span-1 flex flex-col justify-center">' +
       '<i class="fas fa-times fa-2x delete_icon"' +
@@ -325,13 +494,21 @@
     var new_row = document.createElement("div");
     new_row.classList.add("col-span-5", "grid", "grid-cols-5", "gap-6");
     new_row.innerHTML =
-      '<textarea class="col-span-4" placeholder="Column"' +
+      '<textarea class="col-span-4" placeholder="Column" name="matching_cols" ' +
       'style = "padding: 20px 0px 0px 10px ; max-height: 55px;" ></textarea >' +
       '<div class="col-span-1 flex flex-col justify-center">' +
       '<i class="fas fa-times fa-2x delete_icon"' +
       'onclick="delete_option(this)"></i></div>';
     q.insertBefore(new_row, q.lastElementChild);
   }
-</script>
 
+
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"
+  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+  integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+  integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
 {% endblock content %}
