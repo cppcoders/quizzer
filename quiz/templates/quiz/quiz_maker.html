@@ -106,7 +106,6 @@
       'Content-Type': 'application/json',
       'X-CSRFToken': csrfToken
     });
-    console.log(title)
     let fetchRes = fetch('create_quizz/', {
       method: 'POST',
       headers,
@@ -124,7 +123,7 @@
         create_questions(d)
       })
 
-    
+
 
   }
 
@@ -156,29 +155,24 @@
         console.log(question_options)
 
       }
-      else if(question_type =='matching')
-      {
+      else if (question_type == 'matching') {
         html_rows = question.querySelectorAll('textarea[name="matching_rows"]')
         html_cols = question.querySelectorAll('textarea[name="matching_cols"]')
-        for(row of html_rows)
-        {
+        for (row of html_rows) {
           question_rows.push(row.value)
         }
-        for(col of html_cols)
-        {
+        for (col of html_cols) {
           question_columns.push(col.value)
         }
         question_rows = question_rows.toString()
         question_columns = question_columns.toString()
-        
+
         question_right_answer = question.querySelector('textarea[name="mathcing_right_answers"]').value
         question_right_answer = question_right_answer.split(' ').toString()
       }
-      else if(question_type =="torf")
-      {
+      else if (question_type == "torf") {
         inputs = question.querySelectorAll('input[name="torf_input"]')
-        if(inputs[0].checked)
-        {
+        if (inputs[0].checked) {
           question_right_answer = "True"
         }
         else
@@ -200,13 +194,13 @@
 
     }
     alert("Quiz Created, Find it in quizzes");
-    setTimeout(function(){  window.location.href = "/";}, 1000);
-    
+    setTimeout(function () { window.location.href = "/"; }, 1000);
+
   }
 
   function fetch_question(question) {
 
-    
+
 
     let csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;;
     const headers = new Headers({
@@ -216,45 +210,45 @@
     var body = ''
     if (question.question_type == 'mcq') {
       body = JSON.stringify({
-          "exam": question.exam,
-          "question_head": question.question_head,
-          "question_type": question.question_type,
-          "question_options": question.question_options,
-          "question_right_answer": question.question_right_answer,
-        })     
+        "exam": question.exam,
+        "question_head": question.question_head,
+        "question_type": question.question_type,
+        "question_options": question.question_options,
+        "question_right_answer": question.question_right_answer,
+      })
     }
     else if (question.question_type == 'matching') {
       body = JSON.stringify({
-          "exam": question.exam,
-          "question_head": question.question_head,
-          "question_type": question.question_type,
-          "question_rows": question.question_rows,
-          "question_columns": question.question_columns,
-          "question_right_answer": question.question_right_answer,
-        })     
+        "exam": question.exam,
+        "question_head": question.question_head,
+        "question_type": question.question_type,
+        "question_rows": question.question_rows,
+        "question_columns": question.question_columns,
+        "question_right_answer": question.question_right_answer,
+      })
     }
     else if (question.question_type == 'torf') {
       body = JSON.stringify({
-          "exam": question.exam,
-          "question_head": question.question_head,
-          "question_type": question.question_type,
-          "question_right_answer": question.question_right_answer,
-        })     
+        "exam": question.exam,
+        "question_head": question.question_head,
+        "question_type": question.question_type,
+        "question_right_answer": question.question_right_answer,
+      })
     }
     else if (question.question_type == 'essay') {
       body = JSON.stringify({
-          "exam": question.exam,
-          "question_head": question.question_head,
-          "question_type": question.question_type,
-        })     
+        "exam": question.exam,
+        "question_head": question.question_head,
+        "question_type": question.question_type,
+      })
     }
-    
-      let fetchRes = fetch('create_question/', {
-        method: 'POST',
-        headers,
-        credentials: 'include',
-        body: body
-      });
+
+    let fetchRes = fetch('create_question/', {
+      method: 'POST',
+      headers,
+      credentials: 'include',
+      body: body
+    });
     fetchRes.then(res =>
       res.json()).then(d => {
         console.log(d)
@@ -335,11 +329,11 @@
         'style="padding: 15px 0px 0px 10px ; background-color: #f8f9fa; max-height: 60px;"></textarea></div>' +
         "<!------------------------------ Question head -------------------------------------->" +
         "<!------------------------------ Question body -------------------------------------->" +
-        '<div class="grid grid-cols-12" style="padding-bottom: 50px;">' + 
+        '<div class="grid grid-cols-12" style="padding-bottom: 50px;">' +
         '<div class="col-start-1"></div>' +
-        '<div class="col-span-10" style="padding-bottom: 50px;">'+
-        '<textarea name="mathcing_right_answers" style="width:100%" placeholder="Right Answers"></textarea>'+
-        '</div>'+
+        '<div class="col-span-10" style="padding-bottom: 50px;">' +
+        '<textarea name="mathcing_right_answers" style="width:100%" placeholder="Right Answers"></textarea>' +
+        '</div>' +
         '<div class="col-end-1"></div>' +
         '<div class="col-start-1"></div>' +
         '<div class="col-span-5 grid grid-cols-5" id="rows">' +

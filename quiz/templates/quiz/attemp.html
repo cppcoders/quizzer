@@ -37,7 +37,7 @@
 
 <script>
 
-nav = document.querySelectorAll('span[name="nav_page"]')
+  nav = document.querySelectorAll('span[name="nav_page"]')
   nav[0].classList.remove('selected')
   nav[2].classList.add('selected')
 
@@ -82,7 +82,10 @@ nav = document.querySelectorAll('span[name="nav_page"]')
   fetch('get_quiz/' + localStorage['quiz_id'])
     .then(function (u) { return u.json() })
     .then(function (data) {
-      var countDownDate = new Date(Date.parse(data.quiz_date)).getTime();
+      data.quiz_date = new Date(Date.parse(data.quiz_date))
+      data.quiz_date = new Date(data.quiz_date.getTime() - 2 * 60 * 60000)
+
+      var countDownDate = new Date(Date.parse(data.quiz_date)).getTime() + data.quiz_duration * 60000;
       var x = setInterval(function () {
         var now = new Date().getTime();
         var distance = countDownDate - now;
@@ -113,9 +116,9 @@ nav = document.querySelectorAll('span[name="nav_page"]')
     var question_head = question["question_head"];
     question["question_options"] = question["question_options"].split(',')
     if (!isIterable(q['question_options'])) {
-            q.question_options = [q.question_options]
-          }
-        
+      q.question_options = [q.question_options]
+    }
+
     for (op of question["question_options"]) {
       options =
         options +
@@ -297,6 +300,9 @@ nav = document.querySelectorAll('span[name="nav_page"]')
 
 
   function submit_answers() {
+    clearInterval(6)
+    document.getElementById("counter").innerHTML =
+      "00" + ":" + "00" + ":" + "00";
     var inputs = document.getElementsByTagName("input");
     for (var i = 0; i < inputs.length; i++) {
       inputs[i].disabled = true;

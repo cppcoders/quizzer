@@ -41,7 +41,7 @@
   nav[0].classList.remove('selected')
   nav[2].classList.add('selected')
 
-  
+
 
   function fill_data() {
 
@@ -76,15 +76,21 @@
       .then(function (data) {
         data.quiz_date = new Date(Date.parse(data.quiz_date))
         var now = new Date();
-        // if (now >= data.quiz_date && now <= data.quiz_date + (data.duration*60) ) {
-        //   window.location.href = "/attemp";
-        // }
-        // else {
-        //   var not_yet = document.getElementById('not_yet');
-        //   not_yet.style.display = 'block'
-        // }
+        data.quiz_date = new Date(data.quiz_date.getTime() - 2*60*60000 )
+        var quiz_closing_time = new Date(data.quiz_date.getTime() + data.quiz_duration *60000 )
 
-        window.location.href = "/attemp";
+        if (now >= data.quiz_date && now <= quiz_closing_time ) {
+          window.location.href = "/attemp";
+        }
+        else {
+          var not_yet = document.getElementById('not_yet');
+          not_yet.style.display = 'block'
+          console.log(now)
+          console.log(data.quiz_date)
+          console.log(quiz_closing_time)
+        }
+        
+        // window.location.href = "/attemp";
       });
   }
 
