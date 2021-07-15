@@ -61,7 +61,7 @@
         e.innerText = quiz_date;
 
         e = document.getElementById("time");
-        var quiz_time = data.quiz_date.getUTCHours() + ':' + data.quiz_date.getUTCMinutes();
+        var quiz_time = (data.quiz_date.getUTCHours() + 2 )  + ':' + data.quiz_date.getUTCMinutes();
         e.innerText = quiz_time;
 
         e = document.getElementById("duration");
@@ -76,10 +76,10 @@
       .then(function (data) {
         data.quiz_date = new Date(Date.parse(data.quiz_date))
         var now = new Date();
-        data.quiz_date = new Date(data.quiz_date.getTime() - 2*60*60000 )
-        var quiz_closing_time = new Date(data.quiz_date.getTime() + data.quiz_duration *60000 )
+        // data.quiz_date = new Date(data.quiz_date.getTime() - 2*60*60000 )
+        var quiz_closing_time = new Date(data.quiz_date.getTime() + data.quiz_duration * 60000)
 
-        if (now >= data.quiz_date && now <= quiz_closing_time ) {
+        if (now >= data.quiz_date && now <= quiz_closing_time) {
           window.location.href = "/attemp";
         }
         else {
@@ -89,7 +89,7 @@
           console.log(data.quiz_date)
           console.log(quiz_closing_time)
         }
-        
+
         // window.location.href = "/attemp";
       });
   }
