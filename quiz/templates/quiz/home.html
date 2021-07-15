@@ -171,7 +171,7 @@
           var yyyy = q.quiz_date.getFullYear();
           quiz_date = dd + "/" + mm + "/" + yyyy;
 
-          var quiz_time = q.quiz_date.getUTCHours() + ':' + q.quiz_date.getUTCMinutes();
+          var quiz_time = (q.quiz_date.getUTCHours() + 2) + ':' + q.quiz_date.getUTCMinutes();
 
           var c = document.createElement("div");
           c.classList.add("card", "col-lg-3", "col-md-3", "col-sm-5", "m-4");
