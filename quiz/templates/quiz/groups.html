@@ -139,7 +139,9 @@
     });
     fetchRes.then(res =>
       res.json()).then(d => {
-        location.reload()
+        localStorage['group_id'] = d.id
+        localStorage['group_name'] = d.name
+        window.location.href = "/view_group";
       })
   }
 
@@ -164,7 +166,9 @@
     fetchRes.then(res =>
       res.json()).then(d => {
         console.log(d)
-        on_clicked_group(d.id)
+        localStorage['group_id'] = d.id
+        localStorage['group_name'] = d.name
+        window.location.href = "/view_group";
       })
 
   }

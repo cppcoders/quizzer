@@ -22,10 +22,10 @@ from quiz import serializers
 @csrf_exempt
 def list_groups(request):
     user = request.user
-    try:
+    if ( user.is_student):
         student = get_object_or_404(Student, user=user)
         groups = student.groups.all()
-    except:
+    else:
         teacher = get_object_or_404(Teacher, user=user)
         groups = teacher.groups.all()
     

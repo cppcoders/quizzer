@@ -7,7 +7,7 @@
     <p class="group_title" id="title" style="color: #fff;font-size: 100px;">Algorithms</p>
     <p class="group_members_count" id="members_count" style="color: #fff;font-size: 70px;">3 members</p>
     <p class="group_id" id="group_id" style="color: #fff;font-size: 70px;">Group Id: </p>
-    
+
   </div>
 </header>
 
@@ -72,8 +72,9 @@
 </footer>
 
 <script>
+  console.log(localStorage['group_name'])
   document.getElementById('group_id').innerText = 'Group Id: ' + localStorage['group_id']
-  document.getElementById('title').innerText =  localStorage['group_name']
+  document.getElementById('title').innerText = localStorage['group_name']
 
   nav = document.querySelectorAll('span[name="nav_page"]')
   nav[0].classList.remove('selected')
@@ -81,33 +82,27 @@
 
   let account_Type = document.getElementById('account_Type')
   account_Type = account_Type.getAttribute('name')
-  if(account_Type=="True")
+  if (account_Type == "True")
     account_Type = "Student"
   else
     account_Type = "Teacher"
-  
-  if(account_Type =="Student")
-  {
+
+  if (account_Type == "Student") {
     var e = document.getElementById('create_quiz_button')
     e.style.display = "none"
   }
 
-  
+
   function fetch_members() {
-    fetch('get_group_quizzes/' + localStorage['group_id'])
-      .then(function (u) { return u.json() })
-      .then(function (data) {
-          document.getElementById('title').innerText = data[0].quiz_group
-      })
+
     fetch('get_group_members/' + localStorage['group_id'])
       .then(function (u) { return u.json(); })
       .then(function (members_dict) {
         document.getElementById('members_count').innerText = members_dict.length + ' Members'
 
-        function remove(m)
-        {
-          if(account_Type =="Teacher")
-            return '<button class="btn btn-danger m-1" onClick="remove_member(' + m.memeber_id + ')">Remove Member</button></div>' 
+        function remove(m) {
+          if (account_Type == "Teacher")
+            return '<button class="btn btn-danger m-1" onClick="remove_member(' + m.memeber_id + ')">Remove Member</button></div>'
           else
             return ""
         }

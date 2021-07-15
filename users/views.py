@@ -33,6 +33,11 @@ def create_group(request):
     group_serializer = GroupSerializer(data=request.data)
     group_serializer.is_valid(raise_exception=True)
     group_serializer.save(owner=teacher)
+    group = Group.objects.get( id= group_serializer.data['id'])
+    group.owner = teacher
+    group.save()
+    teacher.groups.add(group)
+    teacher.save()
     return Response(group_serializer.data, 201)
 
 
